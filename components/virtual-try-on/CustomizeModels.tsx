@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React from "react";
 
 type CustomModel = {
@@ -31,9 +32,9 @@ const selectedModels: CustomModel[] = [
 
 export default function CustomizeModels() {
   return (
-    <div  className="flex flex-col h-full relative overflow-hidden gap-[14px]">
+    <div className="flex flex-col h-full relative overflow-hidden gap-5">
       {/* Header text */}
-      <div className="relative border-b border-gray-100 flex items-center justify-between gap-4">
+      <div className="relative flex items-center justify-between gap-4">
         <div>
           <h2 className="text-xl leading-[120%] font-semibold text-black-600 mb-1">
             Customize Models
@@ -53,19 +54,21 @@ export default function CustomizeModels() {
               className="bg-white border border-gray-200 rounded-xl overflow-hidden"
             >
               <div className="">
-                <div className="text-sm p-4 font-semibold text-gray-900 border-b border-gray-100">
+                <div className="text-sm p-4 font-semibold text-gray-900 border-b border-gray-200">
                   {model.name}
                 </div>
-                <div className="flex items-center gap-2 px-4 pt-4">
-                  <span className="text-xs text-gray-600">Size:</span>
-                  <div className="inline-flex items-center gap-2">
+              </div>
+              <div className="p-4 bg-white flex flex-col gap-3 relative">
+                <div className="flex items-center gap-2 ">
+                  <span className="text-sm leading-[120%] font-medium text-black-600">Size:</span>
+                  <div className="inline-flex items-center gap-1">
                     {model.sizes.map((size) => (
                       <span
                         key={size}
-                        className={`h-8 w-8 inline-flex items-center justify-center rounded-full border text-sm font-medium ${
+                        className={`h-8 w-8 inline-flex items-center justify-center rounded-full border text-base leading-[120%] ${
                           size === model.activeSize
-                            ? "bg-orange-100 border-orange-400 text-orange-600"
-                            : "bg-white border-gray-300 text-gray-700"
+                            ? "bg-orange-600 border-orange-600 text-white font-semibold"
+                            : "bg-white border-gray-200 text-gray-600 font-normal"
                         }`}
                       >
                         {size}
@@ -73,13 +76,12 @@ export default function CustomizeModels() {
                     ))}
                   </div>
                 </div>
-              </div>
-              <div className="p-4 bg-white">
-                <div className="rounded-2xl overflow-hidden border border-gray-100 ">
-                  <img
+                <div className="rounded-xl relative h-[20rem] overflow-hidden border border-gray-200 ">
+                  <Image
                     src="/assets/model.png"
                     alt={model.name}
                     className="w-full h-[320px] object-cover"
+                    fill 
                   />
                 </div>
               </div>

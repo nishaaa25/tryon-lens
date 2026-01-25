@@ -3,6 +3,7 @@ import StepOneForm from "@/components/StepOneForm";
 import CustomizeModels from "@/components/virtual-try-on/CustomizeModels";
 import ImageGuide from "@/components/virtual-try-on/ImageGuide";
 import ModelsGallery from "@/components/virtual-try-on/ModelsGallery";
+import PosesGallery from "@/components/virtual-try-on/PosesGallery";
 import ProgressStepper from "@/components/virtual-try-on/ProgressStepper";
 import UploadSection from "@/components/virtual-try-on/UploadSection";
 import Image from "next/image";
@@ -83,6 +84,11 @@ export default function HomePage() {
               className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
             >
               <CustomizeModels />
+            </div>
+            <div
+              className={`${activeStep === 4 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
+            >
+              <PosesGallery />
             </div>
           </div>
           <div

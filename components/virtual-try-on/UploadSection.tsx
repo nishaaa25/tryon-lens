@@ -24,9 +24,9 @@ export default function UploadSection({setFileUpload}: {setFileUpload?: (uploade
 
   return (
     <div className="flex flex-col items-center justify-center py-12 px-6 relative z-100">
-      <div className="relative w-full max-w-2xl h-64 flex items-center justify-center">
+      <div className="relative w-full max-w-2xl h-64 mt-10 flex items-center justify-center">
         {/* Card 1 - T-shirt on hanger (left, back) */}
-        <div className="absolute left-[6%] bottom-13 -rotate-15 transform z-0">
+        <div className="absolute left-[20%] bottom-13 -rotate-15 transform z-0">
           <div className="w-[163px] h-[194px] rounded-lg shadow-xl relative flex items-center justify-center bg-white border-6 border-white">
             <Image
               src="/assets/dummy-upload.png"
@@ -38,7 +38,7 @@ export default function UploadSection({setFileUpload}: {setFileUpload?: (uploade
         </div>
 
         {/* Card 2 - Person wearing t-shirt (center, front) */}
-        <div className="absolute left-1/2 -translate-x-1/2 rotate-2 transform z-10">
+        <div className="absolute left-1/2 -translate-x-1/2  transform z-10">
           <div className="w-[163px] h-[194px] rounded-lg shadow-xl relative flex items-center justify-center bg-white border-6 border-white">
             <Image
               src="/assets/dummy-upload.png"
@@ -50,7 +50,7 @@ export default function UploadSection({setFileUpload}: {setFileUpload?: (uploade
         </div>
 
         {/* Card 3 - Mannequin (right, back) */}
-        <div className="absolute right-[6%] bottom-13 rotate-15 transform z-0">
+        <div className="absolute right-[20%] bottom-13 rotate-15 transform z-0">
           <div className="w-[163px] h-[194px] rounded-lg shadow-xl relative flex items-center justify-center bg-white border-6 border-white">
             <Image
               src="/assets/dummy-upload.png"
