@@ -6,6 +6,7 @@ import ImageGuide from "@/components/virtual-try-on/ImageGuide";
 import ModelsGallery from "@/components/virtual-try-on/ModelsGallery";
 import PosesGallery from "@/components/virtual-try-on/PosesGallery";
 import ProgressStepper from "@/components/virtual-try-on/ProgressStepper";
+import Summary from "@/components/virtual-try-on/Summary";
 import UploadSection from "@/components/virtual-try-on/UploadSection";
 import Image from "next/image";
 import { relative } from "node:path/win32";
@@ -95,6 +96,11 @@ export default function HomePage() {
               className={`${activeStep === 5 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
             >
               <BackgroundGallery />
+            </div>
+             <div
+              className={`${activeStep === 6 ? "relative" : "hidden"} z-60 w-full h-full p-6`}
+            >
+              <Summary />
             </div>
           </div>
           <div

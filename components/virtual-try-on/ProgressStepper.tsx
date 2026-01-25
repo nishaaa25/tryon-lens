@@ -35,7 +35,7 @@ export default function ProgressStepper({
             className={`flex items-center gap-[6px] leading-[120%]  pr-4  p-[6px] rounded-lg text-sm transition-colors ${
               step.number === activeStep
                 ? 'bg-[#fff3eb] border border-orange-300 text-black-600 font-semibold '
-                : 'text-gray-600 font-medium border border-white '
+                : 'text-gray-600 font-medium border border-transparent '
             }`}
             aria-current={step.number === activeStep ? 'step' : undefined}
           >

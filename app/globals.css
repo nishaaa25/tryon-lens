@@ -83,3 +83,7 @@ body {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+.product-bg{
+  background: linear-gradient(138.54deg, #D4D6D6 2.46%, #E1E3E3 94.14%);
+}
