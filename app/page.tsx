@@ -1,5 +1,6 @@
 "use client";
 import StepOneForm from "@/components/StepOneForm";
+import BackgroundGallery from "@/components/virtual-try-on/BackgroundGallery";
 import CustomizeModels from "@/components/virtual-try-on/CustomizeModels";
 import ImageGuide from "@/components/virtual-try-on/ImageGuide";
 import ModelsGallery from "@/components/virtual-try-on/ModelsGallery";
@@ -89,6 +90,11 @@ export default function HomePage() {
               className={`${activeStep === 4 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
             >
               <PosesGallery />
+            </div>
+             <div
+              className={`${activeStep === 5 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
+            >
+              <BackgroundGallery />
             </div>
           </div>
           <div

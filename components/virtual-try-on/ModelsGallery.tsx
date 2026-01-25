@@ -242,13 +242,13 @@ export default function ModelsGallery() {
         <div className="relative flex justify-between items-center ">
           <div className="inline-flex rounded-lg bg-[#f2f5f8] p-1 text-sm leading-[120%] border border-gray-200 font-medium">
             <button className="w-[133px] py-1.5 rounded-md border border-white bg-white text-black-600">
-              Women{" "}
+              Women
               <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm  ml-1 px-1 bg-[#fff3eb]">
                 68
               </span>
             </button>
             <button className="w-[133px] py-1.5 rounded-md text-black-600 ">
-              Men{" "}
+              Men
               <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm  ml-1 px-1 bg-[#fff3eb]">
                 15
               </span>
