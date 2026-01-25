@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-black-600: #181b25;
+  --color-white-400: #f5f7fa;
+  --color-gray-200: #e1e4ea;
+  --color-gray-600: #525866;
+  --color-orange-600: #e16614;
+  --color-orange-300: #ffc197;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    var(--font-geist-sans),
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+.gradient-1 {
+  background: linear-gradient(
+    122.68deg,
+    rgba(225, 228, 234, 0.6) 13.16%,
+    rgba(225, 228, 234, 0.4) 45.96%,
+    #e1e4ea 77.67%
+  );
+}
+
+.stepper-gradient {
+  background: linear-gradient(90.2deg, #ffffff 55.33%, #fcf4ee 99.11%);
+}
+
+.image-gallery-bg {
+  background: linear-gradient(
+    -150.13deg,
+    rgba(249, 235, 225, 0.8) 1.21%,
+    #ffffff 97.95%
+  );
+}
+
+.btn-gradient {
+  background:linear-gradient(299.26deg, #e16614 5.47%, #ffc197 100%);
+}
+
+.box-gradient{
+  background: linear-gradient(90.2deg, #FFFFFF 55.33%, #FFF3EB 99.11%);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
