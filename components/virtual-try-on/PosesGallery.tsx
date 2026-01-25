@@ -96,44 +96,94 @@ export default function PosesGallery() {
       </div>
 
       {/* Gradient body */}
-      <div className="flex-1 pb-4 relative h-full w-full overflow-auto">
-        <p className="text-base leading-[120%] font-semibold text-black-600 mb-4">
-          Full body poses (10)
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 overflow-y-auto relative no-scrollbar">
-          {selectedModels.map((model) => (
-            <button
-              key={model.id}
-              onClick={() => togglePoseSelection(model.id)}
-              className={` ${selectedPoses.includes(model.id) ? "border-orange-300 bg-[#fff3eb]" : "border-gray-200 bg-white"} border p-4 rounded-xl gap-4 overflow-hidden`}
-            >
-              <div
-                className={`rounded-xl p-1.5 relative h-[20rem] overflow-hidden ${selectedPoses.includes(model.id) ? "border border-orange-600" : "border border-gray-200"}`}
+      <div className="relative h-full w-full overflow-auto no-scrollbar">
+        <div className=" pb-4 relative">
+          <p className="text-base leading-[120%] font-semibold text-black-600 mb-4">
+            Full body poses (10)
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 overflow-y-auto relative ">
+            {selectedModels.map((model) => (
+              <button
+                key={model.id}
+                onClick={() => togglePoseSelection(model.id)}
+                className={` ${selectedPoses.includes(model.id) ? "border-orange-300 bg-[#fff3eb]" : "border-gray-200 bg-white"} border p-4 rounded-xl gap-4 overflow-hidden`}
               >
-                <Image
-                  src="/assets/poses.png"
-                  alt={`Model ${model.id}`}
-                  className="w-full absolute top-0 left-0 object-cover"
-                  fill
-                />
-                <div className="relative flex justify-between items-start">
-                  <div className="relative bg-white p-1.5 rounded-full flex justify-center items-center border border-gray-200 w-7 h-7">
-                    <Image
-                      src="/assets/like.svg"
-                      alt="like icon"
-                      width={16}
-                      height={16}
-                    />
+                <div
+                  className={`rounded-xl p-1.5 relative h-[20rem] overflow-hidden ${selectedPoses.includes(model.id) ? "border border-orange-600" : "border border-gray-200"}`}
+                >
+                  <Image
+                    src="/assets/poses.png"
+                    alt={`Model ${model.id}`}
+                    className="w-full absolute top-0 left-0 object-cover"
+                    fill
+                  />
+                  <div className="relative flex justify-between items-start">
+                    <div className="relative bg-white p-1.5 rounded-full flex justify-center items-center border border-gray-200 w-7 h-7">
+                      <Image
+                        src="/assets/like.svg"
+                        alt="like icon"
+                        width={16}
+                        height={16}
+                      />
+                    </div>
+                    {selectedPoses.includes(model.id) && (
+                      <Image
+                        src="/assets/selected.svg"
+                        alt="selected icon"
+                        width={16}
+                        height={16}
+                        className="relative"
+                      />
+                    )}
                   </div>
-                   {
-                        selectedPoses.includes(model.id) && (
-                          <Image src="/assets/selected.svg" alt="selected icon" width={16} height={16} className="relative" />
-                        )
-                    }
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="pb-4 relative ">
+          <p className="text-base leading-[120%] font-semibold text-black-600 mb-4">
+            Half body poses (7)
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4  relative ">
+            {selectedModels.map((model) => (
+              <button
+                key={model.id}
+                onClick={() => togglePoseSelection(model.id)}
+                className={` ${selectedPoses.includes(model.id) ? "border-orange-300 bg-[#fff3eb]" : "border-gray-200 bg-white"} border p-4 rounded-xl gap-4 overflow-hidden`}
+              >
+                <div
+                  className={`rounded-xl p-1.5 relative h-[20rem] overflow-hidden ${selectedPoses.includes(model.id) ? "border border-orange-600" : "border border-gray-200"}`}
+                >
+                  <Image
+                    src="/assets/poses.png"
+                    alt={`Model ${model.id}`}
+                    className="w-full absolute top-0 left-0 object-cover"
+                    fill
+                  />
+                  <div className="relative flex justify-between items-start">
+                    <div className="relative bg-white p-1.5 rounded-full flex justify-center items-center border border-gray-200 w-7 h-7">
+                      <Image
+                        src="/assets/like.svg"
+                        alt="like icon"
+                        width={16}
+                        height={16}
+                      />
+                    </div>
+                    {selectedPoses.includes(model.id) && (
+                      <Image
+                        src="/assets/selected.svg"
+                        alt="selected icon"
+                        width={16}
+                        height={16}
+                        className="relative"
+                      />
+                    )}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
