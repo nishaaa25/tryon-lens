@@ -289,7 +289,7 @@ export default function ModelsGallery() {
                 className={`rounded-xl border overflow-hidden flex flex-col transition-all ${
                   model.featured
                     ? "border-orange-300 bg-[#fff3eb]"
-                    : "border-gray-200 bg-white hover:shadow-md"
+                    : "border-gray-200 bg-white "
                 }`}
               >
                 <div
@@ -320,7 +320,7 @@ export default function ModelsGallery() {
                       <button
                         type="button"
                         onClick={() => setPreviewModelId(model.id)}
-                        className="relative inline-flex items-center gap-1 rounded-full bg-white border border-gray-200 px-2 py-1 text-[13px] leading-[120%] text-gray-600"
+                        className="relative inline-flex items-center cursor-pointer gap-1 rounded-full bg-white border border-gray-200 px-2 py-1 text-[13px] leading-[120%] text-gray-600"
                       >
                         <Image
                           src="/assets/preview-eye.svg"
@@ -555,34 +555,36 @@ export default function ModelsGallery() {
 
       {/* Preview Modal */}
       {previewModelId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm ">
+          <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">
                 {mockModels.find((m) => m.id === previewModelId)?.name} Preview
               </h3>
               <button
                 type="button"
                 onClick={() => setPreviewModelId(null)}
-                className="h-8 w-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50"
+                className="flex items-center justify-center relative cursor-pointer"
                 aria-label="Close preview"
               >
-                ✕
+                <Image src="/assets/cross.svg" alt="close icon" width={24} height={24} />
               </button>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
-              {mockModels
-                .find((m) => m.id === previewModelId)
-                ?.previewImages.map((src, idx) => (
-                  <div key={idx} className="aspect-[3/4] bg-gray-50">
-                    <img
-                      src={src}
-                      alt="Model preview"
-                      className="w-full h-full object-cover"
-                    />
+            <div className="p-4 relative">
+              <div className="grid relative grid-cols-1 md:grid-cols-3 gap-4">
+                {mockModels
+                  .find((m) => m.id === previewModelId)
+                  ?.previewImages.map((src, idx) => (
+                    <div key={idx} className="aspect-[3/4] relative bg-gray-50 rounded-xl p-3">
+                      <Image
+                        src="/assets/model.png"
+                        alt="Model preview"
+                        className="w-full h-full object-cover rounded-lg"
+                        fill
+                      />
                   </div>
                 ))}
+              </div>
             </div>
           </div>
         </div>
