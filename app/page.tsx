@@ -1,5 +1,6 @@
 "use client";
 import StepOneForm from "@/components/StepOneForm";
+import CustomizeModels from "@/components/virtual-try-on/CustomizeModels";
 import ImageGuide from "@/components/virtual-try-on/ImageGuide";
 import ModelsGallery from "@/components/virtual-try-on/ModelsGallery";
 import ProgressStepper from "@/components/virtual-try-on/ProgressStepper";
@@ -78,6 +79,11 @@ export default function HomePage() {
             >
               <ModelsGallery />
             </div>
+            <div
+              className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
+            >
+              <CustomizeModels />
+            </div>
           </div>
           <div
             className={`${uploadedPhoto || activeStep >= 2 ? "hidden" : "flex"} w-5/12 h-full relative items-start`}
@@ -94,7 +100,7 @@ export default function HomePage() {
               alt="right-arrow"
               width={16}
               height={16}
-            />{" "}
+            />
             <span>Preview</span>
           </button>
           <button className="px-[14px] py-3 bg-black-600 border border-black-600 gap-2 text-white rounded-md w-max flex justify-center items-center leading-[120%] font-medium text-sm ">
