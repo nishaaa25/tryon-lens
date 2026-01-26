@@ -307,7 +307,7 @@ export default function ModelsGallery() {
                 </div>
                 <div className="relative p-4 flex justify-center items-center">
                   <div
-                    className={`rounded-xl w-full p-1.5 relative h-[12rem] overflow-hidden border ${model.featured ? "border-orange-300" : "border-gray-200"} bg-white`}
+                    className={`rounded-xl w-full p-1.5 relative h-[12rem] overflow-hidden border ${model.featured ? "border-orange-600" : "border-gray-200"} bg-white`}
                   >
                     <Image
                       src="/assets/model.png"
@@ -331,7 +331,12 @@ export default function ModelsGallery() {
                         <span>Preview</span>
                       </button>
                       {model.featured && (
-                        <Image src="/assets/selected.svg" alt="featured badge" width={16} height={16} />
+                        <Image
+                          src="/assets/selected.svg"
+                          alt="featured badge"
+                          width={16}
+                          height={16}
+                        />
                       )}
                     </div>
                     <button
@@ -353,28 +358,35 @@ export default function ModelsGallery() {
 
       {/* Filters Modal */}
       {isFiltersOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="w-full max-w-2xl mx-4 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-lg mx-4 bg-white rounded-2xl  border border-gray-200 overflow-hidden">
             {/* Modal header */}
-            <div className="px-6 py-4 flex items-center justify-between border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+            <div className="px-4 py-[14px] flex items-center justify-between border-b border-gray-200">
+              <h3 className="text-xl leading-[120%] font-semibold text-black-600">
+                Filters
+              </h3>
               <button
                 type="button"
                 onClick={() => setIsFiltersOpen(false)}
-                className="h-8 w-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50"
+                className="relative"
                 aria-label="Close filters"
               >
-                ✕
+                <Image
+                  src="/assets/cross.svg"
+                  alt="close-btn"
+                  width={24}
+                  height={24}
+                />
               </button>
             </div>
 
-            <div className="px-6 py-5 max-h-[70vh] overflow-auto">
+            <div className="p-4 max-h-[70vh] flex flex-col gap-6 leading-[120%] overflow-y-auto ">
               {/* Selected */}
-              <div className="mb-5">
-                <p className="text-sm font-semibold text-gray-900 mb-3">
+              <div className="relative flex flex-col gap-3">
+                <p className="text-base font-semibold text-black-600 ">
                   Selected
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 ">
                   {selectedChips.length === 0 ? (
                     <span className="text-xs text-gray-500">None</span>
                   ) : (
@@ -383,27 +395,32 @@ export default function ModelsGallery() {
                         key={chip}
                         type="button"
                         onClick={() => removeChip(chip)}
-                        className="inline-flex items-center gap-2 rounded-full border border-gray-800 px-3 py-1 text-xs text-gray-900 hover:bg-gray-50"
+                        className="inline-flex items-center gap-2 rounded-full border border-black-600 px-2.5 py-1.5 text-sm font-medium text-black-600"
                       >
                         <span>{chip}</span>
-                        <span className="text-gray-600">×</span>
+                        <Image
+                          src="/assets/remove.svg"
+                          alt="remove-filter"
+                          width={16}
+                          height={16}
+                        />
                       </button>
                     ))
                   )}
                 </div>
               </div>
 
-              <div className="h-px bg-gray-200 mb-5" />
+              <hr className="h-px w-full relative text-gray-200" />
 
               {/* Ethnicity */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-semibold text-gray-900">
+              <div className="relative flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-semibold text-black-600 ">
                     Ethnicity
                   </p>
                   <span className="text-gray-500">⌃</span>
                 </div>
-                <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="grid grid-cols-2 gap-3 text-sm leading-[120%] ">
                   {[
                     "Caucasian",
                     "Black",
@@ -413,7 +430,7 @@ export default function ModelsGallery() {
                   ].map((opt) => (
                     <label
                       key={opt}
-                      className="flex items-center gap-2 text-gray-700"
+                      className="flex items-center gap-2"
                     >
                       <input
                         type="checkbox"
@@ -421,25 +438,25 @@ export default function ModelsGallery() {
                         onChange={() =>
                           toggleInList(opt, ethnicity, setEthnicity)
                         }
-                        className="h-4 w-4 accent-orange-500"
+                        className="h-5 w-5 accent-orange-500"
                       />
-                      <span>{opt}</span>
+                        <span className={ethnicity.includes(opt) ? "text-black-600 font-medium" : "text-gray-600 font-normal"}>{opt}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="h-px bg-gray-200 mb-5" />
+              <hr className="h-px w-full relative text-gray-200" />
 
               {/* Hair Color */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-semibold text-gray-900">
+              <div className="flex flex-col gap-3 relative">
+                <div className="flex items-center justify-between gap-3">
+                 <p className="text-base font-semibold text-black-600 ">
                     Hair Color
                   </p>
                   <span className="text-gray-500">⌃</span>
                 </div>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2">
                   {[
                     { label: "Blonde", swatch: "bg-amber-200" },
                     { label: "Red", swatch: "bg-orange-600" },
@@ -452,14 +469,14 @@ export default function ModelsGallery() {
                         key={opt.label}
                         type="button"
                         onClick={() => setHairColor(opt.label)}
-                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs ${
+                        className={`inline-flex items-center gap-2 bg-white rounded-full border pr-3 p-1.5 text-sm leading-[120%] ${
                           active
-                            ? "border-gray-900 text-gray-900 bg-white shadow-sm"
-                            : "border-gray-200 text-gray-700 bg-white hover:bg-gray-50"
+                            ? "border-black-600 text-black-600  font-medium"
+                            : "border-gray-200 text-gray-600 "
                         }`}
                       >
                         <span
-                          className={`h-5 w-5 rounded-full ${opt.swatch}`}
+                          className={`h-7 w-7 rounded-full ${opt.swatch}`}
                         />
                         <span>{opt.label}</span>
                       </button>
@@ -468,17 +485,17 @@ export default function ModelsGallery() {
                 </div>
               </div>
 
-              <div className="h-px bg-gray-200 mb-5" />
+              <hr className="h-px w-full relative text-gray-200" />
 
               {/* Body Size */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-semibold text-gray-900">
+              <div className="relative flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-base font-semibold text-black-600 ">
                     Body Size
                   </p>
                   <span className="text-gray-500">⌃</span>
                 </div>
-                <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="grid grid-cols-2 gap-3 text-sm leading-[120%] ">
                   {[
                     "Small (S)",
                     "Medium (M)",
@@ -487,7 +504,7 @@ export default function ModelsGallery() {
                   ].map((opt) => (
                     <label
                       key={opt}
-                      className="flex items-center gap-2 text-gray-700"
+                       className="flex items-center gap-2"
                     >
                       <input
                         type="checkbox"
@@ -495,36 +512,36 @@ export default function ModelsGallery() {
                         onChange={() =>
                           toggleInList(opt, bodySize, setBodySize)
                         }
-                        className="h-4 w-4 accent-orange-500"
+                          className="h-5 w-5 accent-orange-500"
                       />
-                      <span>{opt}</span>
+                      <span  className={bodySize.includes(opt) ? "text-black-600 font-medium" : "text-gray-600 font-normal"}>{opt}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="h-px bg-gray-200 mb-5" />
+              <hr className="h-px w-full relative text-gray-200" />
 
               {/* Age */}
-              <div className="mb-2">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-semibold text-gray-900">Age</p>
+              <div className="relative flex flex-col gap-3 pb-3">
+                <div className="flex items-center justify-between ">
+                  <p className="text-base font-semibold text-black-600">Age</p>
                   <span className="text-gray-500">⌃</span>
                 </div>
-                <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
                   {["18–25 yrs", "26–35 yrs", "36–45 yrs", "46–55 yrs"].map(
                     (opt) => (
                       <label
                         key={opt}
-                        className="flex items-center gap-2 text-gray-700"
+                        className="flex items-center gap-2 "
                       >
                         <input
                           type="checkbox"
                           checked={age.includes(opt)}
                           onChange={() => toggleInList(opt, age, setAge)}
-                          className="h-4 w-4 accent-orange-500"
+                          className="h-5 w-5 accent-orange-500"
                         />
-                        <span>{opt}</span>
+                        <span className={age.includes(opt) ? "text-black-600 font-medium" : "text-gray-600 font-normal"}>{opt}</span>
                       </label>
                     ),
                   )}
@@ -533,7 +550,7 @@ export default function ModelsGallery() {
             </div>
 
             {/* Modal footer */}
-            <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-white">
+            <div className="px-6 py-3 border-t border-gray-200 flex items-center justify-between bg-white relative">
               <button
                 type="button"
                 onClick={resetFilters}
@@ -544,7 +561,7 @@ export default function ModelsGallery() {
               <button
                 type="button"
                 onClick={() => setIsFiltersOpen(false)}
-                className="inline-flex items-center rounded-lg bg-gray-900 px-5 py-2 text-sm font-medium text-white hover:bg-black"
+                className="inline-flex items-center rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white hover:bg-black"
               >
                 Show 54 Models
               </button>
@@ -567,7 +584,12 @@ export default function ModelsGallery() {
                 className="flex items-center justify-center relative cursor-pointer"
                 aria-label="Close preview"
               >
-                <Image src="/assets/cross.svg" alt="close icon" width={24} height={24} />
+                <Image
+                  src="/assets/cross.svg"
+                  alt="close icon"
+                  width={24}
+                  height={24}
+                />
               </button>
             </div>
             <div className="p-4 relative">
@@ -575,15 +597,18 @@ export default function ModelsGallery() {
                 {mockModels
                   .find((m) => m.id === previewModelId)
                   ?.previewImages.map((src, idx) => (
-                    <div key={idx} className="aspect-[3/4] relative bg-gray-50 rounded-xl p-3">
+                    <div
+                      key={idx}
+                      className="aspect-3/5 relative bg-gray-50 rounded-xl p-3"
+                    >
                       <Image
                         src="/assets/model.png"
                         alt="Model preview"
                         className="w-full h-full object-cover rounded-lg"
                         fill
                       />
-                  </div>
-                ))}
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
