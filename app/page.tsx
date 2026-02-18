@@ -95,6 +95,13 @@ export default function HomePage() {
           <ProgressStepper
             activeStep={activeStep}
             onStepChange={handleStepChange}
+            completedSteps={{
+              1: hasStepOneSelection,
+              2: hasStepTwoSelection,
+              3: hasStepThreeSelection,
+              4: hasStepFourSelection,
+              5: activeStep === 5,
+            }}
           />
         </div>
         <div className="relative z-10 w-full h-full flex flex-col md:flex-row gap-4 overflow-hidden ">
