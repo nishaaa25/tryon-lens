@@ -183,13 +183,27 @@ function DropZone({ imageUrl, onFile, placeholderSrc, placeholderAlt, title, hin
 
 type DropdownId = "top-front" | "top-back" | "bottom-front" | "bottom-back" | null;
 
+type StepOneFormProps = {
+  uploadedImageUrl: string | null;
+  setUploadedImageUrl: (url: string | null) => void;
+  topBackUrl: string | null;
+  setTopBackUrl: (url: string | null) => void;
+  bottomFrontUrl: string | null;
+  setBottomFrontUrl: (url: string | null) => void;
+  bottomBackUrl: string | null;
+  setBottomBackUrl: (url: string | null) => void;
+};
+
 export default function StepOneForm({
-  uploadedImageUrl = null,
+  uploadedImageUrl,
   setUploadedImageUrl,
-}: {
-  uploadedImageUrl?: string | null;
-  setUploadedImageUrl?: (url: string | null) => void;
-}) {
+  topBackUrl,
+  setTopBackUrl,
+  bottomFrontUrl,
+  setBottomFrontUrl,
+  bottomBackUrl,
+  setBottomBackUrl,
+}: StepOneFormProps) {
   const [selectedOption, setSelectedOption] = useState<"Top" | "Bottom">("Top");
   const [openDropdown, setOpenDropdown] = useState<DropdownId>(null);
   const topFrontDotsRef = useRef<HTMLButtonElement>(null);
@@ -197,54 +211,79 @@ export default function StepOneForm({
   const bottomFrontDotsRef = useRef<HTMLButtonElement>(null);
   const bottomBackDotsRef = useRef<HTMLButtonElement>(null);
 
-  const [topBackUrl, setTopBackFile, clearTopBack, setTopBackUrl] = useImageSlot();
-  const [bottomFrontUrl, setBottomFrontFile, clearBottomFront, setBottomFrontUrl] = useImageSlot();
-  const [bottomBackUrl, setBottomBackFile, clearBottomBack, setBottomBackUrl] = useImageSlot();
-
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedOption(event.target.value as "Top" | "Bottom");
     setOpenDropdown(null);
   };
 
   const handleTopFrontFile = (file: File) => {
-    if (!file.type.startsWith("image/") || !setUploadedImageUrl) return;
+    if (!file.type.startsWith("image/")) return;
     if (uploadedImageUrl?.startsWith("blob:")) URL.revokeObjectURL(uploadedImageUrl);
-    const url = URL.createObjectURL(file);
-    setUploadedImageUrl(url);
+    setUploadedImageUrl(URL.createObjectURL(file));
+  };
+
+  const handleTopBackFile = (file: File) => {
+    if (!file.type.startsWith("image/")) return;
+    if (topBackUrl?.startsWith("blob:")) URL.revokeObjectURL(topBackUrl);
+    setTopBackUrl(URL.createObjectURL(file));
+  };
+
+  const handleBottomFrontFile = (file: File) => {
+    if (!file.type.startsWith("image/")) return;
+    if (bottomFrontUrl?.startsWith("blob:")) URL.revokeObjectURL(bottomFrontUrl);
+    setBottomFrontUrl(URL.createObjectURL(file));
+  };
+
+  const handleBottomBackFile = (file: File) => {
+    if (!file.type.startsWith("image/")) return;
+    if (bottomBackUrl?.startsWith("blob:")) URL.revokeObjectURL(bottomBackUrl);
+    setBottomBackUrl(URL.createObjectURL(file));
   };
 
   const clearAllTop = () => {
-    clearTopBack();
-    setUploadedImageUrl?.(null);
+    if (topBackUrl?.startsWith("blob:")) URL.revokeObjectURL(topBackUrl);
+    setTopBackUrl(null);
+    setUploadedImageUrl(null);
     setOpenDropdown(null);
   };
 
   const clearAllBottom = () => {
-    clearBottomFront();
-    clearBottomBack();
+    if (bottomFrontUrl?.startsWith("blob:")) URL.revokeObjectURL(bottomFrontUrl);
+    if (bottomBackUrl?.startsWith("blob:")) URL.revokeObjectURL(bottomBackUrl);
+    setBottomFrontUrl(null);
+    setBottomBackUrl(null);
     setOpenDropdown(null);
   };
 
-  const handleTopFrontRemove = () => setUploadedImageUrl?.(null);
+  const handleTopFrontRemove = () => setUploadedImageUrl(null);
   const handleTopFrontSwap = () => {
     const front = uploadedImageUrl;
     const back = topBackUrl;
-    setUploadedImageUrl?.(back ?? null);
-    setTopBackUrl(front, false);
+    setUploadedImageUrl(back ?? null);
+    setTopBackUrl(front);
   };
 
-  const handleTopBackRemove = () => clearTopBack();
+  const handleTopBackRemove = () => {
+    if (topBackUrl?.startsWith("blob:")) URL.revokeObjectURL(topBackUrl);
+    setTopBackUrl(null);
+  };
   const handleTopBackSwap = () => handleTopFrontSwap();
 
-  const handleBottomFrontRemove = () => clearBottomFront();
+  const handleBottomFrontRemove = () => {
+    if (bottomFrontUrl?.startsWith("blob:")) URL.revokeObjectURL(bottomFrontUrl);
+    setBottomFrontUrl(null);
+  };
   const handleBottomFrontSwap = () => {
     const front = bottomFrontUrl;
     const back = bottomBackUrl;
-    setBottomFrontUrl(back, false);
-    setBottomBackUrl(front, false);
+    setBottomFrontUrl(back);
+    setBottomBackUrl(front);
   };
 
-  const handleBottomBackRemove = () => clearBottomBack();
+  const handleBottomBackRemove = () => {
+    if (bottomBackUrl?.startsWith("blob:")) URL.revokeObjectURL(bottomBackUrl);
+    setBottomBackUrl(null);
+  };
   const handleBottomBackSwap = () => handleBottomFrontSwap();
 
   return (
@@ -341,7 +380,7 @@ export default function StepOneForm({
               </div>
               <DropZone
                 imageUrl={topBackUrl}
-                onFile={setTopBackFile}
+                onFile={handleTopBackFile}
                 placeholderSrc="/assets/front-upload.png"
                 placeholderAlt="Top back"
                 title="Upload Top Back View"
@@ -396,7 +435,7 @@ export default function StepOneForm({
               </div>
               <DropZone
                 imageUrl={bottomFrontUrl}
-                onFile={setBottomFrontFile}
+                onFile={handleBottomFrontFile}
                 placeholderSrc="/assets/bottom-front.png"
                 placeholderAlt="Bottom front"
                 title="Upload Bottom Front View"
@@ -432,7 +471,7 @@ export default function StepOneForm({
               </div>
               <DropZone
                 imageUrl={bottomBackUrl}
-                onFile={setBottomBackFile}
+                onFile={handleBottomBackFile}
                 placeholderSrc="/assets/bottom-back.png"
                 placeholderAlt="Bottom back"
                 title="Upload Bottom Back View"

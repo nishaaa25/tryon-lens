@@ -457,8 +457,9 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
       {/* Preview Modal */}
       {previewModelId && (() => {
         const previewModel = [...womenModels, ...menModels].find((m) => m.id === previewModelId);
+        const poses = previewModel?.modelPoses?.map((p) => p.imageUrl) ?? [];
         const previewImages = previewModel
-          ? [previewModel.frontImage, ...(previewModel.modelPoses?.map((p) => p.imageUrl) ?? [])]
+          ? [previewModel.frontImage, ...poses.slice(0, 2)]
           : [];
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">

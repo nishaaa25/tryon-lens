@@ -15,12 +15,23 @@ import { useEffect, useMemo, useRef, useState } from "react";
 export default function HomePage() {
   const [activeStep, setActiveStep] = useState(1);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [topBackUrl, setTopBackUrl] = useState<string | null>(null);
+  const [bottomFrontUrl, setBottomFrontUrl] = useState<string | null>(null);
+  const [bottomBackUrl, setBottomBackUrl] = useState<string | null>(null);
   const [hasReachedStepOneForm, setHasReachedStepOneForm] = useState(false);
   const [selectedModelIds, setSelectedModelIds] = useState<Set<string>>(new Set());
+  const [selectedPoseKeys, setSelectedPoseKeys] = useState<Set<string>>(new Set());
+  const [selectedBackgroundIds, setSelectedBackgroundIds] = useState<Set<number>>(new Set());
   const uploadedPhoto = !!uploadedImageUrl;
   const showStepOneForm = uploadedPhoto || hasReachedStepOneForm;
   const uploadedImageUrlRef = useRef(uploadedImageUrl);
   uploadedImageUrlRef.current = uploadedImageUrl;
+  const topBackUrlRef = useRef(topBackUrl);
+  topBackUrlRef.current = topBackUrl;
+  const bottomFrontUrlRef = useRef(bottomFrontUrl);
+  bottomFrontUrlRef.current = bottomFrontUrl;
+  const bottomBackUrlRef = useRef(bottomBackUrl);
+  bottomBackUrlRef.current = bottomBackUrl;
 
   const allModels = useMemo(() => [...womenModels, ...menModels], []);
   const selectedModels = useMemo(
@@ -31,21 +42,48 @@ export default function HomePage() {
     [selectedModelIds, allModels],
   );
 
+  const hasStepOneSelection =
+    !!uploadedImageUrl || !!topBackUrl || !!bottomFrontUrl || !!bottomBackUrl;
+  const hasStepTwoSelection = selectedModelIds.size >= 1;
+  const hasStepThreeSelection = selectedPoseKeys.size >= 1;
+  const hasStepFourSelection = selectedBackgroundIds.size >= 1;
+
+  const canGoToNextStep =
+    activeStep === 1
+      ? hasStepOneSelection
+      : activeStep === 2
+        ? hasStepTwoSelection
+        : activeStep === 3
+          ? hasStepThreeSelection
+          : activeStep === 4
+            ? hasStepFourSelection
+            : false;
+
+  const maxReachableStep = !hasStepOneSelection
+    ? 1
+    : !hasStepTwoSelection
+      ? 2
+      : !hasStepThreeSelection
+        ? 3
+        : !hasStepFourSelection
+          ? 4
+          : 5;
+
   useEffect(() => {
     if (uploadedPhoto) setHasReachedStepOneForm(true);
   }, [uploadedPhoto]);
 
-  // Revoke blob URL only on unmount (swap moves URLs, so we don't revoke on change)
+  // Revoke blob URLs only on unmount (swap moves URLs, so we don't revoke on change)
   useEffect(() => {
     return () => {
-      if (uploadedImageUrlRef.current?.startsWith("blob:"))
-        URL.revokeObjectURL(uploadedImageUrlRef.current);
+      [uploadedImageUrlRef, topBackUrlRef, bottomFrontUrlRef, bottomBackUrlRef].forEach((ref) => {
+        if (ref.current?.startsWith("blob:")) URL.revokeObjectURL(ref.current);
+      });
     };
   }, []);
 
   const handleStepChange = (step: number) => {
-    console.log("Step changed to:", step);
-    setActiveStep(step);
+    if (step <= maxReachableStep) setActiveStep(step);
   };
 
   return (
@@ -103,6 +141,12 @@ export default function HomePage() {
                 <StepOneForm
                   uploadedImageUrl={uploadedImageUrl}
                   setUploadedImageUrl={setUploadedImageUrl}
+                  topBackUrl={topBackUrl}
+                  setTopBackUrl={setTopBackUrl}
+                  bottomFrontUrl={bottomFrontUrl}
+                  setBottomFrontUrl={setBottomFrontUrl}
+                  bottomBackUrl={bottomBackUrl}
+                  setBottomBackUrl={setBottomBackUrl}
                 />
               </div>
             </div>
@@ -124,17 +168,34 @@ export default function HomePage() {
             <div
               className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
             >
-              <PosesGallery selectedModels={selectedModels} />
+              <PosesGallery
+                selectedModels={selectedModels}
+                selectedPoseKeys={selectedPoseKeys}
+                setSelectedPoseKeys={setSelectedPoseKeys}
+              />
             </div>
              <div
               className={`${activeStep === 4 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
             >
-              <BackgroundGallery />
+              <BackgroundGallery
+              selectedBackgroundIds={selectedBackgroundIds}
+              setSelectedBackgroundIds={setSelectedBackgroundIds}
+            />
             </div>
              <div
               className={`${activeStep === 5 ? "relative" : "hidden"} z-60 w-full h-full p-6`}
             >
-              <Summary />
+              <Summary
+              productImages={{
+                topFront: uploadedImageUrl,
+                topBack: topBackUrl,
+                bottomFront: bottomFrontUrl,
+                bottomBack: bottomBackUrl,
+              }}
+              selectedModels={selectedModels}
+              selectedPoseKeys={selectedPoseKeys}
+              selectedBackgroundIds={selectedBackgroundIds}
+            />
             </div>
           </div>
           <div
@@ -163,7 +224,7 @@ export default function HomePage() {
           <button
             type="button"
             onClick={() => setActiveStep((s) => Math.min(5, s + 1))}
-            disabled={activeStep === 5}
+            disabled={activeStep === 5 || !canGoToNextStep}
             className="px-[14px] py-3 bg-black-600 border border-black-600 gap-2 text-white rounded-md w-max flex justify-center items-center leading-[120%] font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors"
           >
             <span>Next Step</span>

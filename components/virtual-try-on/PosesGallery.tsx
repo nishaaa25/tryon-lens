@@ -11,11 +11,11 @@ type DataModel = {
 
 type PosesGalleryProps = {
   selectedModels: DataModel[];
+  selectedPoseKeys: Set<string>;
+  setSelectedPoseKeys: React.Dispatch<React.SetStateAction<Set<string>>>;
 };
 
-export default function PosesGallery({ selectedModels }: PosesGalleryProps) {
-  const [selectedPoseKeys, setSelectedPoseKeys] = React.useState<Set<string>>(new Set());
-
+export default function PosesGallery({ selectedModels, selectedPoseKeys, setSelectedPoseKeys }: PosesGalleryProps) {
   const togglePoseSelection = (modelId: string, poseIndex: number) => {
     const key = `${modelId}-${poseIndex}`;
     setSelectedPoseKeys((prev) => {
