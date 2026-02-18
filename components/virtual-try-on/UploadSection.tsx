@@ -59,7 +59,7 @@ export default function UploadSection({
         onChange={handleFileChange}
       />
       <div
-        className={`relative w-full max-w-2xl h-64 mt-10 flex items-center justify-center rounded-xl border-2 border-dashed transition-colors ${isDragging ? "border-orange-400 bg-orange-50/50" : "border-gray-200"}`}
+        className={`relative w-full max-w-2xl h-64 mt-10 flex items-center justify-center rounded-xl  transition-colors ${isDragging ? "border-orange-400 bg-orange-50/50" : "border-gray-200"}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
