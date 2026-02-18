@@ -29,13 +29,17 @@ type FilterState = { ethnicity: string[]; bodyType: string[]; ageGroup: string[]
 
 const emptyFilters: FilterState = { ethnicity: [], bodyType: [], ageGroup: [] };
 
-export default function ModelsGallery() {
+type ModelsGalleryProps = {
+  selectedModelIds: Set<string>;
+  setSelectedModelIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+};
+
+export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }: ModelsGalleryProps) {
   const [activeTab, setActiveTab] = useState<"women" | "men">("women");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filtersWomen, setFiltersWomen] = useState<FilterState>(emptyFilters);
   const [filtersMen, setFiltersMen] = useState<FilterState>(emptyFilters);
   const [previewModelId, setPreviewModelId] = useState<string | null>(null);
-  const [selectedModelIds, setSelectedModelIds] = useState<Set<string>>(new Set());
 
   const currentModels = activeTab === "women" ? womenModels : menModels;
   const currentFilters = activeTab === "women" ? filtersWomen : filtersMen;
@@ -454,7 +458,7 @@ export default function ModelsGallery() {
       {previewModelId && (() => {
         const previewModel = [...womenModels, ...menModels].find((m) => m.id === previewModelId);
         const previewImages = previewModel
-          ? [previewModel.frontImage, ...(previewModel.modelPoses?.map((p) => p.imageUrl) ?? [])].slice(0, 3)
+          ? [previewModel.frontImage, ...(previewModel.modelPoses?.map((p) => p.imageUrl) ?? [])]
           : [];
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">

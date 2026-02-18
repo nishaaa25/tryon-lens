@@ -8,17 +8,28 @@ import PosesGallery from "@/components/virtual-try-on/PosesGallery";
 import ProgressStepper from "@/components/virtual-try-on/ProgressStepper";
 import Summary from "@/components/virtual-try-on/Summary";
 import UploadSection from "@/components/virtual-try-on/UploadSection";
+import { womenModels, menModels } from "@/lib/data";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function HomePage() {
   const [activeStep, setActiveStep] = useState(1);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [hasReachedStepOneForm, setHasReachedStepOneForm] = useState(false);
+  const [selectedModelIds, setSelectedModelIds] = useState<Set<string>>(new Set());
   const uploadedPhoto = !!uploadedImageUrl;
   const showStepOneForm = uploadedPhoto || hasReachedStepOneForm;
   const uploadedImageUrlRef = useRef(uploadedImageUrl);
   uploadedImageUrlRef.current = uploadedImageUrl;
+
+  const allModels = useMemo(() => [...womenModels, ...menModels], []);
+  const selectedModels = useMemo(
+    () =>
+      Array.from(selectedModelIds)
+        .map((id) => allModels.find((m) => m.id === id))
+        .filter(Boolean) as (typeof womenModels)[number][],
+    [selectedModelIds, allModels],
+  );
 
   useEffect(() => {
     if (uploadedPhoto) setHasReachedStepOneForm(true);
@@ -98,7 +109,10 @@ export default function HomePage() {
             <div
               className={`${activeStep === 2 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
             >
-              <ModelsGallery />
+              <ModelsGallery
+                selectedModelIds={selectedModelIds}
+                setSelectedModelIds={setSelectedModelIds}
+              />
             </div>
             {/* Customize Models step commented out for now
             <div
@@ -110,7 +124,7 @@ export default function HomePage() {
             <div
               className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
             >
-              <PosesGallery />
+              <PosesGallery selectedModels={selectedModels} />
             </div>
              <div
               className={`${activeStep === 4 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
