@@ -18,10 +18,10 @@ export default function ProgressStepper({
   const steps: Step[] = [
     { number: 1, label: 'Add Product' },
     { number: 2, label: 'Select Models' },
-    { number: 3, label: 'Customize Models' },
-    { number: 4, label: 'Select Poses' },
-    { number: 5, label: 'Select Background' },
-    { number: 6, label: 'Summary' },
+    // { number: 3, label: 'Customize Models' },
+    { number: 3, label: 'Select Poses' },
+    { number: 4, label: 'Select Background' },
+    { number: 5, label: 'Summary' },
   ];
 
   return (

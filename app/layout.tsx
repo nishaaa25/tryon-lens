@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
-import Header from "@/components/layout/Header";
+import HeaderWithLogin from "@/components/layout/HeaderWithLogin";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -29,7 +30,9 @@ export default function RootLayout({
           <Sidebar />
         </div>
         <div className="flex flex-col w-full relative h-full">
-          <Header />
+          <Suspense fallback={<header className="w-full h-[70px]" />}>
+            <HeaderWithLogin />
+          </Suspense>
           {children}
         </div>
       </body>

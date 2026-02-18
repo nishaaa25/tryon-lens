@@ -1,30 +1,69 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
-export default function UploadSection({setFileUpload}: {setFileUpload?: (uploaded: boolean) => void}) {
+const ACCEPTED_IMAGE_TYPES = "image/png,image/jpeg,image/jpg,image/webp,image/avif,image/heic";
+
+export default function UploadSection({
+  onImageUpload,
+}: {
+  onImageUpload?: (imageUrl: string) => void;
+}) {
   const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const processFile = (file: File) => {
+    if (!file.type.startsWith("image/")) return;
+    const url = URL.createObjectURL(file);
+    onImageUpload?.(url);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) processFile(file);
+    e.target.value = "";
+  };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(true);
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(false);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(false);
-    // Handle file drop logic here
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith("image/")) processFile(file);
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
   };
 
   return (
     <div className="flex flex-col items-center justify-center py-12 px-6 relative z-100">
-      <div className="relative w-full max-w-2xl h-64 mt-10 flex items-center justify-center">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ACCEPTED_IMAGE_TYPES}
+        className="hidden"
+        onChange={handleFileChange}
+      />
+      <div
+        className={`relative w-full max-w-2xl h-64 mt-10 flex items-center justify-center rounded-xl border-2 border-dashed transition-colors ${isDragging ? "border-orange-400 bg-orange-50/50" : "border-gray-200"}`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
         {/* Card 1 - T-shirt on hanger (left, back) */}
         <div className="absolute left-[20%] bottom-13 -rotate-15 transform z-0">
           <div className="w-[163px] h-[194px] rounded-lg shadow-xl relative flex items-center justify-center bg-white border-6 border-white">
@@ -69,11 +108,9 @@ export default function UploadSection({setFileUpload}: {setFileUpload?: (uploade
           Drag and drop your image here (PNG, JPG, WebP, AVIF, or HEIC).
         </p>
         <button
-          className={`p-3.5 bg-black-600 text-white rounded-lg w-10/12 flex justify-center items-center gap-2 hover:bg-gray-800 transition-colors font-medium text-sm `}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={() => setFileUpload && setFileUpload(true)}
+          type="button"
+          className="p-3.5 bg-black-600 text-white rounded-lg w-10/12 flex justify-center items-center gap-2 hover:bg-gray-800 transition-colors font-medium text-sm"
+          onClick={handleUploadClick}
         >
           <Image
             src="/assets/export.svg"

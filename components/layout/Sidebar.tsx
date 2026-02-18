@@ -91,7 +91,7 @@ export default function Sidebar() {
         </div>
 
         {/* Unlock Pro Callout */}
-        <div className="mt-auto p-4 bg-[#f2f5f8] rounded-[14px] gap-2 flex flex-col relative">
+        {/* <div className="mt-auto p-4 bg-[#f2f5f8] rounded-[14px] gap-2 flex flex-col relative">
           <h4 className="font-semibold leading-[120%] text-black-600">
             Unlock Pro! 👑
           </h4>
@@ -102,7 +102,7 @@ export default function Sidebar() {
             <Image src="/assets/premium.svg" alt="lock icon" width={16} height={16} />
             <span className="text-sm leading-[120%] font-medium">Unlock Pro</span>
           </button>
-        </div>
+        </div> */}
       </div>
     </aside>
   );

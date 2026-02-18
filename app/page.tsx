@@ -1,7 +1,7 @@
 "use client";
 import StepOneForm from "@/components/StepOneForm";
 import BackgroundGallery from "@/components/virtual-try-on/BackgroundGallery";
-import CustomizeModels from "@/components/virtual-try-on/CustomizeModels";
+// import CustomizeModels from "@/components/virtual-try-on/CustomizeModels";
 import ImageGuide from "@/components/virtual-try-on/ImageGuide";
 import ModelsGallery from "@/components/virtual-try-on/ModelsGallery";
 import PosesGallery from "@/components/virtual-try-on/PosesGallery";
@@ -9,13 +9,19 @@ import ProgressStepper from "@/components/virtual-try-on/ProgressStepper";
 import Summary from "@/components/virtual-try-on/Summary";
 import UploadSection from "@/components/virtual-try-on/UploadSection";
 import Image from "next/image";
-import { relative } from "node:path/win32";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [activeStep, setActiveStep] = useState(1);
-  const [uploadedPhoto, setUploadedPhoto] = useState(false);
-  console.log("Uploaded Photo:", uploadedPhoto);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const uploadedPhoto = !!uploadedImageUrl;
+
+  // Revoke blob URL when changing or unmounting to avoid memory leaks
+  useEffect(() => {
+    return () => {
+      if (uploadedImageUrl?.startsWith("blob:")) URL.revokeObjectURL(uploadedImageUrl);
+    };
+  }, [uploadedImageUrl]);
 
   const handleStepChange = (step: number) => {
     console.log("Step changed to:", step);
@@ -71,10 +77,10 @@ export default function HomePage() {
               className={`${activeStep === 1 ? "relative" : "hidden"} z-60 w-full h-full p-6`}
             >
               <div className={`${uploadedPhoto ? "hidden" : "block"}`}>
-                <UploadSection setFileUpload={setUploadedPhoto} />
+                <UploadSection onImageUpload={setUploadedImageUrl} />
               </div>
               <div className={`${uploadedPhoto ? "block" : "hidden"}`}>
-                <StepOneForm />
+                <StepOneForm uploadedImageUrl={uploadedImageUrl} />
               </div>
             </div>
             <div
@@ -82,23 +88,25 @@ export default function HomePage() {
             >
               <ModelsGallery />
             </div>
+            {/* Customize Models step commented out for now
             <div
               className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
             >
               <CustomizeModels />
             </div>
+            */}
             <div
-              className={`${activeStep === 4 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
+              className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
             >
               <PosesGallery />
             </div>
              <div
-              className={`${activeStep === 5 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
+              className={`${activeStep === 4 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
             >
               <BackgroundGallery />
             </div>
              <div
-              className={`${activeStep === 6 ? "relative" : "hidden"} z-60 w-full h-full p-6`}
+              className={`${activeStep === 5 ? "relative" : "hidden"} z-60 w-full h-full p-6`}
             >
               <Summary />
             </div>
