@@ -60,22 +60,22 @@ const modelPosesByModelId: Record<string, { poseName: string; viewType: string; 
 
 export const womenModels = [
     {
-        "id": "model-1",
+        "id": "model-8",
         "age-group": "young_adult",
         "ethnicity": "africa",
         "gender": "female",
         "body-type": "curvy",
-        "frontImage": "/assets/models-gallery/model-1/image (1).png",
-        "modelPoses": modelPosesByModelId["model-1"],
+        "frontImage": "/assets/models-gallery/model-8/image (1).png",
+        "modelPoses": modelPosesByModelId["model-8"],
     },
     {
-        "id": "model-2",
+        "id": "model-5",
         "age-group": "adult",
         "ethnicity": "asian",
         "gender": "female",
         "body-type": "athletic",
-        "frontImage": "/assets/models-gallery/model-2/image (2).png",
-        "modelPoses": modelPosesByModelId["model-2"],
+        "frontImage": "/assets/models-gallery/model-5/image (2).png",
+        "modelPoses": modelPosesByModelId["model-5"],
     },
     {
         "id": "model-6",

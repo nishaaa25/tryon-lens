@@ -9,19 +9,28 @@ import ProgressStepper from "@/components/virtual-try-on/ProgressStepper";
 import Summary from "@/components/virtual-try-on/Summary";
 import UploadSection from "@/components/virtual-try-on/UploadSection";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function HomePage() {
   const [activeStep, setActiveStep] = useState(1);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [hasReachedStepOneForm, setHasReachedStepOneForm] = useState(false);
   const uploadedPhoto = !!uploadedImageUrl;
+  const showStepOneForm = uploadedPhoto || hasReachedStepOneForm;
+  const uploadedImageUrlRef = useRef(uploadedImageUrl);
+  uploadedImageUrlRef.current = uploadedImageUrl;
 
-  // Revoke blob URL when changing or unmounting to avoid memory leaks
+  useEffect(() => {
+    if (uploadedPhoto) setHasReachedStepOneForm(true);
+  }, [uploadedPhoto]);
+
+  // Revoke blob URL only on unmount (swap moves URLs, so we don't revoke on change)
   useEffect(() => {
     return () => {
-      if (uploadedImageUrl?.startsWith("blob:")) URL.revokeObjectURL(uploadedImageUrl);
+      if (uploadedImageUrlRef.current?.startsWith("blob:"))
+        URL.revokeObjectURL(uploadedImageUrlRef.current);
     };
-  }, [uploadedImageUrl]);
+  }, []);
 
   const handleStepChange = (step: number) => {
     console.log("Step changed to:", step);
@@ -41,7 +50,7 @@ export default function HomePage() {
         </div>
         <div className="relative z-10 w-full h-full flex flex-col md:flex-row gap-4 overflow-hidden ">
           <div
-            className={`${uploadedPhoto || activeStep >= 2 ? "w-full" : "w-7/12"}  h-full bg-linear-to-br from-white to-[#fff3eb] z-50 rounded-2xl border border-gray-200 relative overflow-hidden`}
+            className={`${showStepOneForm || activeStep >= 2 ? "w-full" : "w-7/12"}  h-full bg-linear-to-br from-white to-[#fff3eb] z-50 rounded-2xl border border-gray-200 relative overflow-hidden`}
           >
             <div className="absolute inset-0 h-full w-full z-50 rounded-2xl bg-[linear-gradient(to_right,#fbb58728_1px,transparent_1px),linear-gradient(to_bottom,#fbb58728_1px,transparent_1px)] opacity-60  bg-size-[24px_24px]" />
             <div className="absolute z-40 w-full h-full backdrop-blur-[30px] rounded-2xl overflow-hidden"></div>
@@ -76,11 +85,14 @@ export default function HomePage() {
             <div
               className={`${activeStep === 1 ? "relative" : "hidden"} z-60 w-full h-full p-6`}
             >
-              <div className={`${uploadedPhoto ? "hidden" : "block"}`}>
+              <div className={`${showStepOneForm ? "hidden" : "block"}`}>
                 <UploadSection onImageUpload={setUploadedImageUrl} />
               </div>
-              <div className={`${uploadedPhoto ? "block" : "hidden"}`}>
-                <StepOneForm uploadedImageUrl={uploadedImageUrl} />
+              <div className={`${showStepOneForm ? "block" : "hidden"}`}>
+                <StepOneForm
+                  uploadedImageUrl={uploadedImageUrl}
+                  setUploadedImageUrl={setUploadedImageUrl}
+                />
               </div>
             </div>
             <div
@@ -112,28 +124,38 @@ export default function HomePage() {
             </div>
           </div>
           <div
-            className={`${uploadedPhoto || activeStep >= 2 ? "hidden" : "flex"} w-5/12 h-full relative items-start`}
+            className={`${showStepOneForm || activeStep >= 2 ? "hidden" : "flex"} w-5/12 h-full relative items-start`}
           >
             <ImageGuide />
           </div>
         </div>
         <div
-          className={`${uploadedPhoto || activeStep >= 2 ? "flex" : "hidden"} relative w-full h-19 box-gradient border border-gray-200 flex items-center justify-between p-4 rounded-2xl`}
+          className={`${showStepOneForm || activeStep >= 2 ? "flex" : "hidden"} relative w-full h-19 box-gradient border border-gray-200 flex items-center justify-between p-4 rounded-2xl`}
         >
-          <button className="px-[14px] py-3 border border-[#cacfd8] text-black-600 gap-2 rounded-md w-max flex justify-center items-center leading-[120%] font-medium text-sm ">
+          <button
+            type="button"
+            onClick={() => setActiveStep((s) => Math.max(1, s - 1))}
+            disabled={activeStep === 1}
+            className="px-[14px] py-3 border border-[#cacfd8] text-black-600 gap-2 rounded-md w-max flex justify-center items-center leading-[120%] font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+          >
             <Image
               src="/assets/prev.svg"
-              alt="right-arrow"
+              alt="previous step"
               width={16}
               height={16}
             />
-            <span>Preview</span>
+            <span>Previous</span>
           </button>
-          <button className="px-[14px] py-3 bg-black-600 border border-black-600 gap-2 text-white rounded-md w-max flex justify-center items-center leading-[120%] font-medium text-sm ">
+          <button
+            type="button"
+            onClick={() => setActiveStep((s) => Math.min(5, s + 1))}
+            disabled={activeStep === 5}
+            className="px-[14px] py-3 bg-black-600 border border-black-600 gap-2 text-white rounded-md w-max flex justify-center items-center leading-[120%] font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors"
+          >
             <span>Next Step</span>
             <Image
               src="/assets/right-arrow.svg"
-              alt="right-arrow"
+              alt="next step"
               width={16}
               height={16}
             />

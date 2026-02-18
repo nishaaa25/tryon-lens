@@ -2,178 +2,105 @@
 
 import Image from "next/image";
 import React, { useMemo, useState } from "react";
+import { womenModels, menModels } from "@/lib/data";
 
-type ModelCard = {
-  id: number;
-  name: string;
-  subtitle: string;
-  ageRange: string;
-  size: string;
-  imageUrl: string;
-  featured?: boolean;
-  previewImages: string[];
-};
+type DataModel = (typeof womenModels)[number];
 
-const mockModels: ModelCard[] = [
-  {
-    id: 1,
-    name: "Denise (Caucasian)",
-    subtitle: "Women",
-    ageRange: "26–35 yrs",
-    size: "S-M",
-    imageUrl:
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=600",
-    featured: true,
-    previewImages: [
-      "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/3756679/pexels-photo-3756679.jpeg?auto=compress&cs=tinysrgb&w=900",
-    ],
-  },
-  {
-    id: 2,
-    name: "Naomi (Black)",
-    subtitle: "Women",
-    ageRange: "26–35 yrs",
-    size: "L-XL",
-    imageUrl:
-      "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=600",
-    previewImages: [
-      "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/949670/pexels-photo-949670.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/936116/pexels-photo-936116.jpeg?auto=compress&cs=tinysrgb&w=900",
-    ],
-  },
-  {
-    id: 3,
-    name: "Devon (Latino)",
-    subtitle: "Women",
-    ageRange: "18–25 yrs",
-    size: "S-M",
-    imageUrl:
-      "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=600",
-    previewImages: [
-      "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/3760852/pexels-photo-3760852.jpeg?auto=compress&cs=tinysrgb&w=900",
-    ],
-  },
-  {
-    id: 4,
-    name: "Julie (East Asian)",
-    subtitle: "Women",
-    ageRange: "46–55 yrs",
-    size: "M-L",
-    imageUrl:
-      "https://images.pexels.com/photos/3760852/pexels-photo-3760852.jpeg?auto=compress&cs=tinysrgb&w=600",
-    previewImages: [
-      "https://images.pexels.com/photos/3760852/pexels-photo-3760852.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/949670/pexels-photo-949670.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?auto=compress&cs=tinysrgb&w=900",
-    ],
-  },
-  {
-    id: 5,
-    name: "Riva (South Asian)",
-    subtitle: "Women",
-    ageRange: "26–35 yrs",
-    size: "S-M",
-    imageUrl:
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=600",
-    previewImages: [
-      "https://images.pexels.com/photos/1310522/pexels-photo-1310522.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?auto=compress&cs=tinysrgb&w=900",
-    ],
-  },
-  {
-    id: 6,
-    name: "Riva (South Asian)",
-    subtitle: "Women",
-    ageRange: "26–35 yrs",
-    size: "S-M",
-    imageUrl:
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=600",
-    previewImages: [
-      "https://images.pexels.com/photos/1310522/pexels-photo-1310522.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?auto=compress&cs=tinysrgb&w=900",
-    ],
-  },
-  {
-    id: 7,
-    name: "Riva (South Asian)",
-    subtitle: "Women",
-    ageRange: "26–35 yrs",
-    size: "S-M",
-    imageUrl:
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=600",
-    previewImages: [
-      "https://images.pexels.com/photos/1310522/pexels-photo-1310522.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?auto=compress&cs=tinysrgb&w=900",
-    ],
-  },
-  {
-    id: 8,
-    name: "Riva (South Asian)",
-    subtitle: "Women",
-    ageRange: "26–35 yrs",
-    size: "S-M",
-    imageUrl:
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=600",
-    previewImages: [
-      "https://images.pexels.com/photos/1310522/pexels-photo-1310522.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?auto=compress&cs=tinysrgb&w=900",
-    ],
-  },
-  {
-    id: 9,
-    name: "Riva (South Asian)",
-    subtitle: "Women",
-    ageRange: "26–35 yrs",
-    size: "S-M",
-    imageUrl:
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=600",
-    previewImages: [
-      "https://images.pexels.com/photos/1310522/pexels-photo-1310522.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?auto=compress&cs=tinysrgb&w=900",
-    ],
-  },
-  {
-    id: 10,
-    name: "Riva (South Asian)",
-    subtitle: "Women",
-    ageRange: "26–35 yrs",
-    size: "S-M",
-    imageUrl:
-      "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=600",
-    previewImages: [
-      "https://images.pexels.com/photos/1310522/pexels-photo-1310522.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=900",
-      "https://images.pexels.com/photos/1036622/pexels-photo-1036622.jpeg?auto=compress&cs=tinysrgb&w=900",
-    ],
-  },
-];
+function formatAgeGroup(age: string): string {
+  const map: Record<string, string> = {
+    young_adult: "18–25 yrs",
+    adult: "26–35 yrs",
+    mature: "36–45 yrs",
+  };
+  return map[age] ?? age;
+}
+
+function formatLabel(m: DataModel): string {
+  const ethnicity = String(m.ethnicity).charAt(0).toUpperCase() + String(m.ethnicity).slice(1);
+  const body = String(m["body-type"]).charAt(0).toUpperCase() + String(m["body-type"]).slice(1);
+  return `${body} (${ethnicity})`;
+}
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+
+type FilterState = { ethnicity: string[]; bodyType: string[]; ageGroup: string[] };
+
+const emptyFilters: FilterState = { ethnicity: [], bodyType: [], ageGroup: [] };
 
 export default function ModelsGallery() {
+  const [activeTab, setActiveTab] = useState<"women" | "men">("women");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [ethnicity, setEthnicity] = useState<string[]>(["Caucasian"]);
-  const [hairColor, setHairColor] = useState<string>("Blonde");
-  const [bodySize, setBodySize] = useState<string[]>(["Small (S)"]);
-  const [age, setAge] = useState<string[]>(["26–35 yrs"]);
-  const [previewModelId, setPreviewModelId] = useState<number | null>(null);
+  const [filtersWomen, setFiltersWomen] = useState<FilterState>(emptyFilters);
+  const [filtersMen, setFiltersMen] = useState<FilterState>(emptyFilters);
+  const [previewModelId, setPreviewModelId] = useState<string | null>(null);
+  const [selectedModelIds, setSelectedModelIds] = useState<Set<string>>(new Set());
+
+  const currentModels = activeTab === "women" ? womenModels : menModels;
+  const currentFilters = activeTab === "women" ? filtersWomen : filtersMen;
+  const setCurrentFilters = activeTab === "women" ? setFiltersWomen : setFiltersMen;
+  const allModels = useMemo(() => [...womenModels, ...menModels], []);
+
+  const setActiveTabAndClearOther = (tab: "women" | "men") => {
+    if (tab === activeTab) return;
+    setActiveTab(tab);
+    setSelectedModelIds((prev) => {
+      const keepIds = tab === "women" ? womenModels : menModels;
+      const keepSet = new Set(keepIds.map((m) => m.id));
+      return new Set(Array.from(prev).filter((id) => keepSet.has(id)));
+    });
+  };
+
+  const filterOptions = useMemo(() => {
+    const ethnicities = new Set<string>();
+    const bodyTypes = new Set<string>();
+    const ageGroups = new Set<string>();
+    currentModels.forEach((m) => {
+      ethnicities.add(String(m.ethnicity));
+      bodyTypes.add(String(m["body-type"]));
+      ageGroups.add(String(m["age-group"]));
+    });
+    return {
+      ethnicity: Array.from(ethnicities).sort(),
+      bodyType: Array.from(bodyTypes).sort(),
+      ageGroup: Array.from(ageGroups).sort(),
+    };
+  }, [currentModels]);
+
+  const filteredModels = useMemo(() => {
+    const { ethnicity, bodyType, ageGroup } = currentFilters;
+    return currentModels.filter((m) => {
+      if (ethnicity.length > 0 && !ethnicity.includes(String(m.ethnicity))) return false;
+      if (bodyType.length > 0 && !bodyType.includes(String(m["body-type"]))) return false;
+      if (ageGroup.length > 0 && !ageGroup.includes(String(m["age-group"]))) return false;
+      return true;
+    });
+  }, [currentModels, currentFilters]);
+
+  const selectedIdsInOrder = useMemo(() => Array.from(selectedModelIds), [selectedModelIds]);
+  const selectedModelsForSlots = useMemo(
+    () => selectedIdsInOrder.map((id) => allModels.find((m) => m.id === id)).filter(Boolean) as DataModel[],
+    [selectedIdsInOrder, allModels],
+  );
+
+  const toggleModelSelection = (modelId: string) => {
+    setSelectedModelIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(modelId)) next.delete(modelId);
+      else if (next.size < 4) next.add(modelId);
+      return next;
+    });
+  };
 
   const selectedChips = useMemo(() => {
     const chips: string[] = [];
-    chips.push(...ethnicity);
-    if (hairColor) chips.push(hairColor);
-    chips.push(...bodySize);
-    chips.push(...age);
+    const { ethnicity, bodyType, ageGroup } = currentFilters;
+    ethnicity.forEach((e) => chips.push(capitalize(e)));
+    bodyType.forEach((b) => chips.push(capitalize(b)));
+    ageGroup.forEach((a) => chips.push(formatAgeGroup(a)));
     return chips;
-  }, [age, bodySize, ethnicity, hairColor]);
+  }, [currentFilters]);
 
   const toggleInList = (
     value: string,
@@ -188,19 +115,17 @@ export default function ModelsGallery() {
   };
 
   const removeChip = (chip: string) => {
-    if (ethnicity.includes(chip))
-      return setEthnicity(ethnicity.filter((v) => v !== chip));
-    if (bodySize.includes(chip))
-      return setBodySize(bodySize.filter((v) => v !== chip));
-    if (age.includes(chip)) return setAge(age.filter((v) => v !== chip));
-    if (hairColor === chip) return setHairColor("");
+    const { ethnicity, bodyType, ageGroup } = currentFilters;
+    const eth = filterOptions.ethnicity.find((e) => capitalize(e) === chip);
+    if (eth !== undefined) return setCurrentFilters({ ...currentFilters, ethnicity: ethnicity.filter((v) => v !== eth) });
+    const body = filterOptions.bodyType.find((b) => capitalize(b) === chip);
+    if (body !== undefined) return setCurrentFilters({ ...currentFilters, bodyType: bodyType.filter((v) => v !== body) });
+    const age = filterOptions.ageGroup.find((a) => formatAgeGroup(a) === chip);
+    if (age !== undefined) return setCurrentFilters({ ...currentFilters, ageGroup: ageGroup.filter((v) => v !== age) });
   };
 
   const resetFilters = () => {
-    setEthnicity([]);
-    setHairColor("");
-    setBodySize([]);
-    setAge([]);
+    setCurrentFilters(emptyFilters);
   };
 
   return (
@@ -217,53 +142,52 @@ export default function ModelsGallery() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-12 w-12 rounded-md border bg-[#f2f5f8] relative border-gray-200 overflow-hidden"></div>
-            <div className="h-12 w-12 rounded-md border bg-[#f2f5f8] relative border-gray-200 overflow-hidden"></div>
-            <div className="h-12 w-12 rounded-md border bg-[#f2f5f8] relative border-gray-200 overflow-hidden">
-              <Image
-                src="/assets/dummy-upload.png"
-                alt="Model thumbnail"
-                fill
-                className=" object-cover"
-              />
-            </div>
-            <div className="h-12 w-12 rounded-md border bg-[#f2f5f8] relative border-gray-200 overflow-hidden">
-              <Image
-                src="/assets/dummy-upload.png"
-                alt="Model thumbnail"
-                fill
-                className=" object-cover"
-              />
-            </div>
+            {[0, 1, 2, 3].map((idx) => {
+              const model = selectedModelsForSlots[idx];
+              return (
+                <div
+                  key={idx}
+                  className="h-12 w-12 rounded-md border border-gray-200 overflow-hidden relative bg-[#f2f5f8] flex-shrink-0"
+                >
+                  {model ? (
+                    <Image
+                      src={model.frontImage}
+                      alt={formatLabel(model)}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : null}
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* Tabs */}
         <div className="relative flex justify-between items-center ">
           <div className="inline-flex rounded-lg bg-[#f2f5f8] p-1 text-sm leading-[120%] border border-gray-200 font-medium">
-            <button className="w-[133px] py-1.5 rounded-md border border-white bg-white text-black-600">
+            <button
+              type="button"
+              onClick={() => setActiveTabAndClearOther("women")}
+              className={`w-[133px] py-1.5 rounded-md text-black-600 ${activeTab === "women" ? "border border-white bg-white" : ""}`}
+            >
               Women
-              <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm  ml-1 px-1 bg-[#fff3eb]">
-                68
+              <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-[#fff3eb]">
+                {womenModels.length}
               </span>
             </button>
-            <button className="w-[133px] py-1.5 rounded-md text-black-600 ">
+            <button
+              type="button"
+              onClick={() => setActiveTabAndClearOther("men")}
+              className={`w-[133px] py-1.5 rounded-md text-black-600 ${activeTab === "men" ? "border border-white bg-white" : ""}`}
+            >
               Men
-              <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm  ml-1 px-1 bg-[#fff3eb]">
-                15
+              <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-[#fff3eb]">
+                {menModels.length}
               </span>
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <button className="inline-flex items-center gap-2 rounded-md border border-gray-200 font-medium bg-white px-3 py-[10px] text-sm leading-[120%] text-black-600  hover:bg-gray-50">
-              <Image
-                src="/assets/like.svg"
-                alt="heart icon"
-                width={16}
-                height={16}
-              />
-              <span>Favorites</span>
-            </button>
             <button
               type="button"
               onClick={() => setIsFiltersOpen(true)}
@@ -283,75 +207,82 @@ export default function ModelsGallery() {
         {/* Grid */}
         <div className="relative overflow-y-auto mt-2 no-scrollbar pb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {mockModels.map((model) => (
-              <div
-                key={model.id}
-                className={`rounded-xl border overflow-hidden flex flex-col transition-all ${
-                  model.featured
-                    ? "border-orange-300 bg-[#fff3eb]"
-                    : "border-gray-200 bg-white "
-                }`}
-              >
+            {filteredModels.map((model) => {
+              const isSelected = selectedModelIds.has(model.id);
+              const label = formatLabel(model);
+              return (
                 <div
-                  className={`px-4 py-3.5 flex items-center justify-between border-b ${model.featured ? "border-orange-300" : "border-gray-200"} `}
+                  key={model.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => toggleModelSelection(model.id)}
+                  onKeyDown={(e) => e.key === "Enter" && toggleModelSelection(model.id)}
+                  className={`rounded-xl border overflow-hidden flex flex-col transition-all cursor-pointer ${
+                    isSelected ? "border-orange-300 bg-[#fff3eb]" : "border-gray-200 bg-white"
+                  }`}
                 >
-                  <p className="text-sm font-medium text-black-600 leading-[120%]">
-                    {model.name}
-                  </p>
-                  <Image
-                    src="/assets/like.svg"
-                    width={16}
-                    height={16}
-                    alt="like icon"
-                  />
-                </div>
-                <div className="relative p-4 flex justify-center items-center">
                   <div
-                    className={`rounded-xl w-full p-1.5 relative h-[12rem] overflow-hidden border ${model.featured ? "border-orange-600" : "border-gray-200"} bg-white`}
+                    className={`px-4 py-3.5 flex items-center justify-between border-b ${isSelected ? "border-orange-300" : "border-gray-200"}`}
                   >
+                    <p className="text-sm font-medium text-black-600 leading-[120%]">
+                      {label}
+                    </p>
                     <Image
-                      src="/assets/model.png"
-                      alt={model.name}
-                      fill
-                      className="w-full h-full absolute top-0 left-0 object-cover"
+                      src="/assets/like.svg"
+                      width={16}
+                      height={16}
+                      alt="like icon"
                     />
-                    {/* Top chips */}
-                    <div className="flex justify-between items-start relative">
-                      <button
-                        type="button"
-                        onClick={() => setPreviewModelId(model.id)}
-                        className="relative inline-flex items-center cursor-pointer gap-1 rounded-full bg-white border border-gray-200 px-2 py-1 text-[13px] leading-[120%] text-gray-600"
-                      >
-                        <Image
-                          src="/assets/preview-eye.svg"
-                          alt="preview eye"
-                          width={16}
-                          height={16}
-                        />
-                        <span>Preview</span>
-                      </button>
-                      {model.featured && (
-                        <Image
-                          src="/assets/selected.svg"
-                          alt="featured badge"
-                          width={16}
-                          height={16}
-                        />
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setPreviewModelId(model.id)}
-                      className="absolute bottom-1.5 right-1.5 inline-flex items-center justify-center gap-1 rounded-full bg-white border border-gray-200 px-2 py-1 text-[13px] leading-[120%] text-gray-600"
+                  </div>
+                  <div className="relative p-4 flex justify-center items-center">
+                    <div
+                      className={`rounded-xl w-full p-1.5 relative h-[12rem] overflow-hidden border ${isSelected ? "border-orange-600" : "border-gray-200"} bg-white`}
                     >
-                      <span>26 - 35 yrs</span>{" "}
-                      <div className="w-[1px] h-2 bg-[#e1e4ea] mt-[2px]"></div>{" "}
-                      <span>S-M</span>
-                    </button>
+                      <Image
+                        src={model.frontImage}
+                        alt={label}
+                        fill
+                        className="w-full h-full absolute top-0 left-0 object-cover"
+                      />
+                      <div className="flex justify-between items-start relative">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPreviewModelId(model.id);
+                          }}
+                          className="relative inline-flex items-center cursor-pointer gap-1 rounded-full bg-white border border-gray-200 px-2 py-1 text-[13px] leading-[120%] text-gray-600"
+                        >
+                          <Image
+                            src="/assets/preview-eye.svg"
+                            alt="preview eye"
+                            width={16}
+                            height={16}
+                          />
+                          <span>Preview</span>
+                        </button>
+                        {isSelected && (
+                          <Image
+                            src="/assets/selected.svg"
+                            alt="selected badge"
+                            width={16}
+                            height={16}
+                          />
+                        )}
+                      </div>
+                      <div
+                        role="presentation"
+                        className="absolute bottom-1.5 right-1.5 inline-flex items-center justify-center gap-1 rounded-full bg-white border border-gray-200 px-2 py-1 text-[13px] leading-[120%] text-gray-600 pointer-events-none"
+                      >
+                        <span>{formatAgeGroup(model["age-group"])}</span>
+                        <div className="w-[1px] h-2 bg-[#e1e4ea] mt-[2px]" />
+                        <span>{String(model["body-type"])}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -412,35 +343,28 @@ export default function ModelsGallery() {
 
               <hr className="h-px w-full relative text-gray-200" />
 
-              {/* Ethnicity */}
+              {/* Ethnicity – from data */}
               <div className="relative flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-base font-semibold text-black-600 ">
-                    Ethnicity
-                  </p>
+                  <p className="text-base font-semibold text-black-600">Ethnicity</p>
                   <span className="text-gray-500">⌃</span>
                 </div>
-                <div className="grid grid-cols-2 gap-3 text-sm leading-[120%] ">
-                  {[
-                    "Caucasian",
-                    "Black",
-                    "Latino",
-                    "East Asian",
-                    "South Asian",
-                  ].map((opt) => (
-                    <label
-                      key={opt}
-                      className="flex items-center gap-2"
-                    >
+                <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
+                  {filterOptions.ethnicity.map((value) => (
+                    <label key={value} className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        checked={ethnicity.includes(opt)}
+                        checked={currentFilters.ethnicity.includes(value)}
                         onChange={() =>
-                          toggleInList(opt, ethnicity, setEthnicity)
+                          toggleInList(value, currentFilters.ethnicity, (next) =>
+                            setCurrentFilters({ ...currentFilters, ethnicity: next }),
+                          )
                         }
                         className="h-5 w-5 accent-orange-500"
                       />
-                        <span className={ethnicity.includes(opt) ? "text-black-600 font-medium" : "text-gray-600 font-normal"}>{opt}</span>
+                      <span className={currentFilters.ethnicity.includes(value) ? "text-black-600 font-medium" : "text-gray-600 font-normal"}>
+                        {capitalize(value)}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -448,73 +372,28 @@ export default function ModelsGallery() {
 
               <hr className="h-px w-full relative text-gray-200" />
 
-              {/* Hair Color */}
-              <div className="flex flex-col gap-3 relative">
-                <div className="flex items-center justify-between gap-3">
-                 <p className="text-base font-semibold text-black-600 ">
-                    Hair Color
-                  </p>
-                  <span className="text-gray-500">⌃</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { label: "Blonde", swatch: "bg-amber-200" },
-                    { label: "Red", swatch: "bg-orange-600" },
-                    { label: "Brown", swatch: "bg-amber-900" },
-                    { label: "Black", swatch: "bg-zinc-900" },
-                  ].map((opt) => {
-                    const active = hairColor === opt.label;
-                    return (
-                      <button
-                        key={opt.label}
-                        type="button"
-                        onClick={() => setHairColor(opt.label)}
-                        className={`inline-flex items-center gap-2 bg-white rounded-full border pr-3 p-1.5 text-sm leading-[120%] ${
-                          active
-                            ? "border-black-600 text-black-600  font-medium"
-                            : "border-gray-200 text-gray-600 "
-                        }`}
-                      >
-                        <span
-                          className={`h-7 w-7 rounded-full ${opt.swatch}`}
-                        />
-                        <span>{opt.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <hr className="h-px w-full relative text-gray-200" />
-
-              {/* Body Size */}
+              {/* Body type – from data */}
               <div className="relative flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-base font-semibold text-black-600 ">
-                    Body Size
-                  </p>
+                  <p className="text-base font-semibold text-black-600">Body type</p>
                   <span className="text-gray-500">⌃</span>
                 </div>
-                <div className="grid grid-cols-2 gap-3 text-sm leading-[120%] ">
-                  {[
-                    "Small (S)",
-                    "Medium (M)",
-                    "Large (L)",
-                    "Extra Large (XL)",
-                  ].map((opt) => (
-                    <label
-                      key={opt}
-                       className="flex items-center gap-2"
-                    >
+                <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
+                  {filterOptions.bodyType.map((value) => (
+                    <label key={value} className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        checked={bodySize.includes(opt)}
+                        checked={currentFilters.bodyType.includes(value)}
                         onChange={() =>
-                          toggleInList(opt, bodySize, setBodySize)
+                          toggleInList(value, currentFilters.bodyType, (next) =>
+                            setCurrentFilters({ ...currentFilters, bodyType: next }),
+                          )
                         }
-                          className="h-5 w-5 accent-orange-500"
+                        className="h-5 w-5 accent-orange-500"
                       />
-                      <span  className={bodySize.includes(opt) ? "text-black-600 font-medium" : "text-gray-600 font-normal"}>{opt}</span>
+                      <span className={currentFilters.bodyType.includes(value) ? "text-black-600 font-medium" : "text-gray-600 font-normal"}>
+                        {capitalize(value)}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -522,29 +401,30 @@ export default function ModelsGallery() {
 
               <hr className="h-px w-full relative text-gray-200" />
 
-              {/* Age */}
+              {/* Age – from data */}
               <div className="relative flex flex-col gap-3 pb-3">
-                <div className="flex items-center justify-between ">
+                <div className="flex items-center justify-between">
                   <p className="text-base font-semibold text-black-600">Age</p>
                   <span className="text-gray-500">⌃</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
-                  {["18–25 yrs", "26–35 yrs", "36–45 yrs", "46–55 yrs"].map(
-                    (opt) => (
-                      <label
-                        key={opt}
-                        className="flex items-center gap-2 "
-                      >
-                        <input
-                          type="checkbox"
-                          checked={age.includes(opt)}
-                          onChange={() => toggleInList(opt, age, setAge)}
-                          className="h-5 w-5 accent-orange-500"
-                        />
-                        <span className={age.includes(opt) ? "text-black-600 font-medium" : "text-gray-600 font-normal"}>{opt}</span>
-                      </label>
-                    ),
-                  )}
+                  {filterOptions.ageGroup.map((value) => (
+                    <label key={value} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={currentFilters.ageGroup.includes(value)}
+                        onChange={() =>
+                          toggleInList(value, currentFilters.ageGroup, (next) =>
+                            setCurrentFilters({ ...currentFilters, ageGroup: next }),
+                          )
+                        }
+                        className="h-5 w-5 accent-orange-500"
+                      />
+                      <span className={currentFilters.ageGroup.includes(value) ? "text-black-600 font-medium" : "text-gray-600 font-normal"}>
+                        {formatAgeGroup(value)}
+                      </span>
+                    </label>
+                  ))}
                 </div>
               </div>
             </div>
@@ -563,7 +443,7 @@ export default function ModelsGallery() {
                 onClick={() => setIsFiltersOpen(false)}
                 className="inline-flex items-center rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white hover:bg-black"
               >
-                Show 54 Models
+                Show {filteredModels.length} Model{filteredModels.length !== 1 ? "s" : ""}
               </button>
             </div>
           </div>
@@ -571,49 +451,53 @@ export default function ModelsGallery() {
       )}
 
       {/* Preview Modal */}
-      {previewModelId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm ">
-          <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl border border-gray-200 overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {mockModels.find((m) => m.id === previewModelId)?.name} Preview
-              </h3>
-              <button
-                type="button"
-                onClick={() => setPreviewModelId(null)}
-                className="flex items-center justify-center relative cursor-pointer"
-                aria-label="Close preview"
-              >
-                <Image
-                  src="/assets/cross.svg"
-                  alt="close icon"
-                  width={24}
-                  height={24}
-                />
-              </button>
-            </div>
-            <div className="p-4 relative">
-              <div className="grid relative grid-cols-1 md:grid-cols-3 gap-4">
-                {mockModels
-                  .find((m) => m.id === previewModelId)
-                  ?.previewImages.map((src, idx) => (
+      {previewModelId && (() => {
+        const previewModel = [...womenModels, ...menModels].find((m) => m.id === previewModelId);
+        const previewImages = previewModel
+          ? [previewModel.frontImage, ...(previewModel.modelPoses?.map((p) => p.imageUrl) ?? [])].slice(0, 3)
+          : [];
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl border border-gray-200 overflow-hidden">
+              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {previewModel ? formatLabel(previewModel) : "Model"} Preview
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setPreviewModelId(null)}
+                  className="flex items-center justify-center relative cursor-pointer"
+                  aria-label="Close preview"
+                >
+                  <Image
+                    src="/assets/cross.svg"
+                    alt="close icon"
+                    width={24}
+                    height={24}
+                  />
+                </button>
+              </div>
+              <div className="p-4 relative">
+                <div className="grid relative grid-cols-1 md:grid-cols-3 gap-4">
+                  {previewImages.map((src, idx) => (
                     <div
                       key={idx}
-                      className="aspect-3/5 relative bg-gray-50 rounded-xl p-3"
+                      className="aspect-[3/5] relative bg-gray-50 rounded-xl overflow-hidden"
                     >
                       <Image
-                        src="/assets/model.png"
+                        src={src}
                         alt="Model preview"
                         className="w-full h-full object-cover rounded-lg"
                         fill
                       />
                     </div>
                   ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </>
   );
 }
