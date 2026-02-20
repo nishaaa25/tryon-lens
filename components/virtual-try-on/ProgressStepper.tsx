@@ -26,8 +26,8 @@ export default function ProgressStepper({
   ];
 
   return (
-    <div className="w-full rounded-xl border border-gray-200 bg-white p-4 relative stepper-gradient ">
-      <div className="flex items-center gap-2 min-w-max">
+    <div className="w-full rounded-xl border border-gray-200 bg-white p-3 sm:p-4 relative stepper-gradient overflow-x-auto">
+      <div className="flex items-center gap-1 sm:gap-2 min-w-max">
       {steps.map((step, index) => {
         const hasSelection = !!completedSteps[step.number];
         const isCompleted = step.number < activeStep || hasSelection;
@@ -37,7 +37,7 @@ export default function ProgressStepper({
           <button
             type="button"
             onClick={onStepChange ? () => onStepChange(step.number) : undefined}
-            className={`flex items-center gap-[6px] leading-[120%]  pr-4  p-[6px] rounded-lg text-sm transition-colors ${
+            className={`flex items-center gap-1 sm:gap-[6px] leading-[120%] pr-2 sm:pr-4 p-1.5 sm:p-[6px] rounded-lg text-xs sm:text-sm transition-colors shrink-0 ${
               isActive
                 ? 'bg-[#fff3eb] border border-orange-300 text-black-600 font-semibold '
                 : isCompleted
@@ -47,13 +47,13 @@ export default function ProgressStepper({
             aria-current={isActive ? 'step' : undefined}
           >
             {isCompleted ? (
-              <div className="h-[30px] w-[30px] rounded-md bg-orange-600 flex items-center justify-center shrink-0">
-                <Image src="/assets/white-tick.svg" alt="completed" width={14} height={14} className="relative" />
+              <div className="h-7 w-7 sm:h-[30px] sm:w-[30px] rounded-md bg-orange-600 flex items-center justify-center shrink-0">
+                <Image src="/assets/white-tick.svg" alt="completed" width={14} height={14} className="relative w-3 h-3 sm:w-[14px] sm:h-[14px]" />
               </div>
             ) : (
-              <div className={`${isActive ? "bg-orange-600 text-white" : "bg-[#f2f5f8]"} h-[30px] w-[30px] flex items-center justify-center rounded-md shrink-0`}>{step.number}</div>
+              <div className={`${isActive ? "bg-orange-600 text-white" : "bg-[#f2f5f8]"} h-7 w-7 sm:h-[30px] sm:w-[30px] flex items-center justify-center rounded-md shrink-0 text-xs sm:text-base`}>{step.number}</div>
             )}
-            <span>{step.label}</span>
+            <span className="whitespace-nowrap hidden sm:inline">{step.label}</span>
           </button>
           {index < steps.length - 1 && (
             <div className='p-[2px]'><Image src="/assets/arrow.svg" alt="arrow" width={16} height={16} /></div>

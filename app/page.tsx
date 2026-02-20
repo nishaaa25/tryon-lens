@@ -88,10 +88,10 @@ export default function HomePage() {
 
   return (
     <>
-      <div className="p-6 relative h-full flex flex-col gap-4 rounded-tl-2xl overflow-hidden w-full border border-gray-200">
+      <div className="p-4 sm:p-6 relative h-full min-h-0 flex flex-col gap-3 sm:gap-4 rounded-tl-2xl overflow-hidden w-full border border-gray-200">
         <div className="absolute inset-0 h-full w-full bg-[#f6f7fa] bg-[radial-gradient(#e5e7ebcc_2px,transparent_1px)] bg-size-[18px_18px]"></div>
         {/* Main Content Area */}
-        <div className="relative w-full ">
+        <div className="relative w-full min-w-0 overflow-hidden">
           <ProgressStepper
             activeStep={activeStep}
             onStepChange={handleStepChange}
@@ -104,9 +104,9 @@ export default function HomePage() {
             }}
           />
         </div>
-        <div className="relative z-10 w-full h-full flex flex-col md:flex-row gap-4 overflow-hidden ">
+        <div className="relative z-10 w-full flex-1 min-h-0 flex flex-col lg:flex-row gap-3 sm:gap-4 overflow-hidden">
           <div
-            className={`${showStepOneForm || activeStep >= 2 ? "w-full" : "w-7/12"}  h-full bg-linear-to-br from-white to-[#fff3eb] z-50 rounded-2xl border border-gray-200 relative overflow-hidden`}
+            className={`${showStepOneForm || activeStep >= 2 ? "w-full" : "w-full lg:w-7/12"} min-h-0 flex-1 bg-linear-to-br from-white to-[#fff3eb] z-50 rounded-2xl border border-gray-200 relative overflow-hidden`}
           >
             <div className="absolute inset-0 h-full w-full z-50 rounded-2xl bg-[linear-gradient(to_right,#fbb58728_1px,transparent_1px),linear-gradient(to_bottom,#fbb58728_1px,transparent_1px)] opacity-60  bg-size-[24px_24px]" />
             <div className="absolute z-40 w-full h-full backdrop-blur-[30px] rounded-2xl overflow-hidden"></div>
@@ -139,7 +139,7 @@ export default function HomePage() {
               className="absolute bottom-0 left-0 z-10 "
             />
             <div
-              className={`${activeStep === 1 ? "relative" : "hidden"} z-60 w-full h-full p-6`}
+              className={`${activeStep === 1 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 overflow-y-auto`}
             >
               <div className={`${showStepOneForm ? "hidden" : "block"}`}>
                 <UploadSection onImageUpload={setUploadedImageUrl} />
@@ -158,7 +158,7 @@ export default function HomePage() {
               </div>
             </div>
             <div
-              className={`${activeStep === 2 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
+              className={`${activeStep === 2 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 pb-0 overflow-y-auto`}
             >
               <ModelsGallery
                 selectedModelIds={selectedModelIds}
@@ -173,7 +173,7 @@ export default function HomePage() {
             </div>
             */}
             <div
-              className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
+              className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 pb-0 overflow-y-auto`}
             >
               <PosesGallery
                 selectedModels={selectedModels}
@@ -182,7 +182,7 @@ export default function HomePage() {
               />
             </div>
              <div
-              className={`${activeStep === 4 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
+              className={`${activeStep === 4 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 pb-0 overflow-y-auto`}
             >
               <BackgroundGallery
               selectedBackgroundIds={selectedBackgroundIds}
@@ -190,7 +190,7 @@ export default function HomePage() {
             />
             </div>
              <div
-              className={`${activeStep === 5 ? "relative" : "hidden"} z-60 w-full h-full p-6`}
+              className={`${activeStep === 5 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 overflow-y-auto`}
             >
               <Summary
               productImages={{
@@ -206,25 +206,26 @@ export default function HomePage() {
             </div>
           </div>
           <div
-            className={`${showStepOneForm || activeStep >= 2 ? "hidden" : "flex"} w-5/12 h-full relative items-start`}
+            className={`${showStepOneForm || activeStep >= 2 ? "hidden" : "hidden lg:flex"} lg:w-5/12 h-full relative items-start shrink-0`}
           >
             <ImageGuide />
           </div>
         </div>
         <div
-          className={`${showStepOneForm || activeStep >= 2 ? "flex" : "hidden"} relative w-full h-19 box-gradient border border-gray-200 flex items-center justify-between p-4 rounded-2xl`}
+          className={`${showStepOneForm || activeStep >= 2 ? "flex" : "hidden"} relative w-full shrink-0 box-gradient border border-gray-200 flex flex-row items-center justify-between p-2 sm:p-4 rounded-2xl gap-2`}
         >
           <button
             type="button"
             onClick={() => setActiveStep((s) => Math.max(1, s - 1))}
             disabled={activeStep === 1}
-            className="px-[14px] py-3 border border-[#cacfd8] text-black-600 gap-2 rounded-md w-max flex justify-center items-center leading-[120%] font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+            className="px-2 py-2 sm:px-[14px] sm:py-3 border border-[#cacfd8] text-black-600 gap-1.5 sm:gap-2 rounded-md flex justify-center items-center leading-[120%] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors shrink-0"
           >
             <Image
               src="/assets/prev.svg"
               alt="previous step"
               width={16}
               height={16}
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4"
             />
             <span>Previous</span>
           </button>
@@ -232,7 +233,7 @@ export default function HomePage() {
             type="button"
             onClick={() => setActiveStep((s) => Math.min(5, s + 1))}
             disabled={activeStep === 5 || !canGoToNextStep}
-            className="px-[14px] py-3 bg-black-600 border border-black-600 gap-2 text-white rounded-md w-max flex justify-center items-center leading-[120%] font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors"
+            className="px-2 py-2 sm:px-[14px] sm:py-3 bg-black-600 border border-black-600 gap-1.5 sm:gap-2 text-white rounded-md flex justify-center items-center leading-[120%] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors shrink-0"
           >
             <span>Next Step</span>
             <Image
@@ -240,6 +241,7 @@ export default function HomePage() {
               alt="next step"
               width={16}
               height={16}
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4"
             />
           </button>
         </div>

@@ -168,12 +168,12 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
         </div>
 
         {/* Tabs */}
-        <div className="relative flex justify-between items-center ">
-          <div className="inline-flex rounded-lg bg-[#f2f5f8] p-1 text-sm leading-[120%] border border-gray-200 font-medium">
+        <div className="relative flex flex-wrap justify-between items-center gap-2">
+          <div className="inline-flex flex-wrap rounded-lg bg-[#f2f5f8] p-1 text-sm leading-[120%] border border-gray-200 font-medium gap-1">
             <button
               type="button"
               onClick={() => setActiveTabAndClearOther("women")}
-              className={`w-[133px] py-1.5 rounded-md text-black-600 ${activeTab === "women" ? "border border-white bg-white" : ""}`}
+              className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md text-black-600 px-2 sm:px-0 ${activeTab === "women" ? "border border-white bg-white" : ""}`}
             >
               Women
               <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-[#fff3eb]">
@@ -183,7 +183,7 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
             <button
               type="button"
               onClick={() => setActiveTabAndClearOther("men")}
-              className={`w-[133px] py-1.5 rounded-md text-black-600 ${activeTab === "men" ? "border border-white bg-white" : ""}`}
+              className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md text-black-600 px-2 sm:px-0 ${activeTab === "men" ? "border border-white bg-white" : ""}`}
             >
               Men
               <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-[#fff3eb]">

@@ -7,17 +7,19 @@ type HeaderProps = {
 
 export default function Header({ onSignInClick }: HeaderProps) {
   return (
-    <header className="w-full px-4 bg-white relative py-[14px] flex items-center justify-end h-[70px]">
-
-      {/* Trial Message */}
-      {/* <div className="flex items-center gap-2 text-base text-black-600 font-medium leading-[120%]">
-        <span className=''>On a free trial? Sign in to get</span>
-        <span className="text-orange-500 font-bold">8 free credits</span>
-        <span>instantly.</span>
-      </div> */}
+    <header className="w-full px-3 sm:px-4 bg-white relative py-3 sm:py-[14px] flex items-center justify-between lg:justify-end h-14 sm:h-[70px] min-h-[56px]">
+      {/* Logo - visible on small screens when sidebar is hidden */}
+      <div className="relative h-8 w-24 sm:h-9 sm:w-28 lg:hidden shrink-0">
+        <Image
+          src="/assets/dummy-logo.svg"
+          alt="Try On Lens"
+          fill
+          className="object-contain object-left"
+        />
+      </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-[14px] text-sm leading-[120%] font-medium relative">
+      <div className="flex items-center gap-[14px] text-sm leading-[120%] font-medium relative shrink-0">
         {/* <button className="p-[14px] bg-black-600 text-white  rounded-lg flex items-center gap-2 hover:bg-gray-800 transition-colors">
           <Image
             src="/assets/premium.svg"

@@ -2,22 +2,10 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import { backgroundGallery, type BackgroundGalleryItem } from "@/lib/data";
 
-export type BackgroundItem = {
-  id: number;
-  name: string;
-  category: "Studio" | "Indoor" | "Outdoor";
-  imageUrl: string;
-};
-
-export const backgrounds: BackgroundItem[] = [
-  { id: 1, name: "Studio Background 1", category: "Studio", imageUrl: "/assets/studio.png" },
-  { id: 2, name: "Studio Background 2", category: "Studio", imageUrl: "/assets/studio.png" },
-  { id: 3, name: "Indoor Background 1", category: "Indoor", imageUrl: "/assets/studio.png" },
-  { id: 4, name: "Outdoor Background 1", category: "Outdoor", imageUrl: "/assets/studio.png" },
-  { id: 5, name: "Studio Background 3", category: "Studio", imageUrl: "/assets/studio.png" },
-  { id: 6, name: "Indoor Background 2", category: "Indoor", imageUrl: "/assets/studio.png" },
-];
+export type BackgroundItem = BackgroundGalleryItem;
+export const backgrounds = backgroundGallery;
 
 type BackgroundGalleryProps = {
   selectedBackgroundIds: Set<number>;
@@ -65,12 +53,12 @@ export default function BackgroundGallery({ selectedBackgroundIds, setSelectedBa
         </div>
       </div>
 
-      <div className="relative flex justify-between items-center">
-        <div className="inline-flex rounded-lg bg-[#f2f5f8] p-1 text-sm leading-[120%] border border-gray-200 font-medium">
+      <div className="relative flex flex-wrap justify-between items-center gap-2">
+        <div className="inline-flex flex-wrap rounded-lg bg-[#f2f5f8] p-1 text-sm leading-[120%] border border-gray-200 font-medium gap-1">
           <button
             type="button"
             onClick={() => setActiveTab("Studio")}
-            className={`w-[133px] py-1.5 rounded-md ${activeTab === "Studio" ? "text-black-600 bg-white border border-white" : "bg-transparent text-gray-600"}`}
+            className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md px-2 sm:px-0 ${activeTab === "Studio" ? "text-black-600 bg-white border border-white" : "bg-transparent text-gray-600"}`}
           >
             Studio
             <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-[#fff3eb]">
@@ -80,7 +68,7 @@ export default function BackgroundGallery({ selectedBackgroundIds, setSelectedBa
           <button
             type="button"
             onClick={() => setActiveTab("Indoor")}
-            className={`w-[133px] py-1.5 rounded-md ${activeTab === "Indoor" ? "text-black-600 bg-white border border-white" : "bg-transparent text-gray-600"}`}
+            className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md px-2 sm:px-0 ${activeTab === "Indoor" ? "text-black-600 bg-white border border-white" : "bg-transparent text-gray-600"}`}
           >
             Indoor
             <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-[#fff3eb]">
@@ -90,7 +78,7 @@ export default function BackgroundGallery({ selectedBackgroundIds, setSelectedBa
           <button
             type="button"
             onClick={() => setActiveTab("Outdoor")}
-            className={`w-[133px] py-1.5 rounded-md ${activeTab === "Outdoor" ? "text-black-600 bg-white border border-white" : "bg-transparent text-gray-600"}`}
+            className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md px-2 sm:px-0 ${activeTab === "Outdoor" ? "text-black-600 bg-white border border-white" : "bg-transparent text-gray-600"}`}
           >
             Outdoor
             <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-[#fff3eb]">

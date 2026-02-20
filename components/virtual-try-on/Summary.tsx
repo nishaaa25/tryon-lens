@@ -63,19 +63,19 @@ export default function Summary({
       <h2 className="text-xl leading-[120%] font-semibold text-black-600 mb-1">
         Summary
       </h2>
-      <div className="flex justify-center items-center gap-5 relative h-full overflow-hidden no-scrollbar">
-        <div className="flex flex-col border-b gap-4 border w-[73%] border-gray-200 rounded-2xl bg-white h-full ">
+      <div className="flex flex-col lg:flex-row justify-center items-stretch gap-4 lg:gap-5 relative h-full min-h-0 overflow-y-auto lg:overflow-hidden no-scrollbar">
+        <div className="flex flex-col border-b gap-4 border w-full lg:w-[73%] border-gray-200 rounded-2xl bg-white lg:h-full shrink-0 lg:shrink">
           <h3 className="text-base leading-[120%] p-4  border-b border-gray-200 font-semibold text-black-600 mb-1">
             Product Images
           </h3>
-          <div className="grid grid-cols-2 gap-4 px-4 pb-4 overflow-y-auto no-scrollbar">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 px-3 sm:px-4 pb-4 overflow-y-auto no-scrollbar">
             {productSlots.map(({ label, url }) => (
               <div key={label} className="relative flex flex-col gap-2">
                 <h4 className="text-sm leading-[140%] font-medium text-gray-600">
                   {label}
                 </h4>
                 {url ? (
-                  <div className="rounded-xl relative overflow-hidden w-full h-[22rem] product-bg border border-gray-200">
+                  <div className="rounded-xl relative overflow-hidden w-full h-64 sm:h-[22rem] product-bg border border-gray-200">
                     <img
                       src={url}
                       alt={label}
@@ -83,7 +83,7 @@ export default function Summary({
                     />
                   </div>
                 ) : (
-                  <div className="rounded-xl w-full h-[22rem] border border-gray-200 bg-[#f2f5f8] flex items-center justify-center">
+                  <div className="rounded-xl w-full h-64 sm:h-[22rem] border border-gray-200 bg-[#f2f5f8] flex items-center justify-center">
                     <p className="text-sm font-medium text-gray-500">No image uploaded</p>
                   </div>
                 )}
@@ -91,7 +91,7 @@ export default function Summary({
             ))}
           </div>
         </div>
-        <div className="flex flex-col  border w-[27%] border-gray-200 rounded-2xl overflow-hidden bg-white h-full ">
+        <div className="flex flex-col border w-full lg:w-[27%] border-gray-200 rounded-2xl overflow-hidden bg-white lg:h-full min-h-0 shrink-0 lg:shrink">
           <h3 className="text-base leading-[120%] p-4  border-b border-gray-200 font-semibold text-black-600 mb-1">
             Untitled Project
             <Image
@@ -102,7 +102,7 @@ export default function Summary({
               className="inline-block ml-1"
             />
           </h3>
-          <div className="p-4 relative flex flex-col gap-4 overflow-y-auto no-scrollbar">
+          <div className="p-3 sm:p-4 relative flex flex-col gap-4 overflow-y-auto no-scrollbar">
             <div className="flex flex-col gap-2 border-b pb-4 border-gray-200">
               <h3 className="text-sm leading-[120%] font-medium text-black-600 mb-1">
                 Models

@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: "Try On Lens - Virtual Try On",
   description:
     "Virtual Try On application for accurate, high-quality AI results",
+  viewport: { width: "device-width", initialScale: 1 },
 };
 
 export default function RootLayout({
@@ -24,12 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${dmSans.variable} antialiased  w-full h-screen flex justify-center items-center bg-white relative overflow-hidden`}
+        className={`${dmSans.variable} antialiased w-full min-h-screen lg:h-screen flex flex-col lg:flex-row justify-center items-stretch bg-white relative overflow-x-hidden`}
       >
-        <div className="min-w-60 w-60 relative h-full">
+        <div className="hidden lg:block lg:min-w-60 lg:w-60 relative lg:h-full shrink-0">
           <Sidebar />
         </div>
-        <div className="flex flex-col w-full relative h-full">
+        <div className="flex flex-col w-full min-w-0 relative flex-1 lg:h-full overflow-hidden">
           <Suspense fallback={<header className="w-full h-[70px]" />}>
             <HeaderWithLogin />
           </Suspense>

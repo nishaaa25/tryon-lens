@@ -89,7 +89,7 @@ export default function PosesGallery({ selectedModels, selectedPoseKeys, setSele
             Select models in the previous step to see their poses here.
           </p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
             {allPoses.map(({ key, modelId, poseIndex, imageUrl }) => {
               const isSelected = selectedPoseKeys.has(key);
               return (
@@ -100,7 +100,7 @@ export default function PosesGallery({ selectedModels, selectedPoseKeys, setSele
                   className={`${isSelected ? "border-orange-300 bg-[#fff3eb]" : "border-gray-200 bg-white"} border p-4 rounded-xl gap-4 overflow-hidden`}
                 >
                   <div
-                    className={`rounded-xl p-1.5 relative h-[20rem] overflow-hidden ${isSelected ? "border border-orange-600" : "border border-gray-200"}`}
+                    className={`rounded-xl p-1.5 relative h-64 sm:h-72 md:h-[20rem] overflow-hidden ${isSelected ? "border border-orange-600" : "border border-gray-200"}`}
                   >
                     <Image
                       src={imageUrl}

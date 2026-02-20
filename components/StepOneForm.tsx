@@ -314,7 +314,7 @@ export default function StepOneForm({
               Clear All Top Image
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-4 p-4 relative">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 p-3 sm:p-4 relative">
             <div className="w-full relative flex flex-col gap-3">
               <div className="flex justify-between items-center relative">
                 <h4 className="text-sm font-medium text-gray-600">Front</h4>
@@ -405,7 +405,7 @@ export default function StepOneForm({
               Clear All Bottom Image
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-4 p-4 relative">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 p-3 sm:p-4 relative">
             <div className="w-full relative flex flex-col gap-3">
               <div className="flex justify-between items-center relative">
                 <h4 className="text-sm font-medium text-gray-600">Front</h4>
