@@ -7,7 +7,7 @@ type LoginModalProps = {
 export default function LoginModal({ onClose }: LoginModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-sm">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-5xl w-full mx-4 overflow-hidden flex flex-col md:flex-row">
+      <div className="bg-surface rounded-3xl shadow-2xl max-w-5xl w-full mx-4 overflow-hidden flex flex-col md:flex-row">
         {/* Left: Image */}
         <div className="relative w-full md:w-1/2 h-72 md:h-[520px] bg-gradient-to-br from-orange-400 via-red-400 to-pink-500">
           <img
@@ -72,14 +72,14 @@ export default function LoginModal({ onClose }: LoginModalProps) {
           <div className="flex flex-col sm:flex-row gap-3 mb-5">
             <button
               type="button"
-              className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg py-2.5 text-[13px] hover:bg-gray-50 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 border border-border rounded-lg py-2.5 text-[13px] hover:bg-gray-50 transition-colors"
             >
               <span>🔍</span>
               <span>Google</span>
             </button>
             <button
               type="button"
-              className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg py-2.5 text-[13px] hover:bg-gray-50 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 border border-border rounded-lg py-2.5 text-[13px] hover:bg-gray-50 transition-colors"
             >
               <span></span>
               <span>Apple ID</span>

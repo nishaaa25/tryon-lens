@@ -54,34 +54,34 @@ export default function BackgroundGallery({ selectedBackgroundIds, setSelectedBa
       </div>
 
       <div className="relative flex flex-wrap justify-between items-center gap-2">
-        <div className="inline-flex flex-wrap rounded-lg bg-[#f2f5f8] p-1 text-sm leading-[120%] border border-gray-200 font-medium gap-1">
+        <div className="inline-flex flex-wrap rounded-lg bg-surface-muted p-1 text-sm leading-[120%] border border-border font-medium gap-1">
           <button
             type="button"
             onClick={() => setActiveTab("Studio")}
-            className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md px-2 sm:px-0 ${activeTab === "Studio" ? "text-black-600 bg-white border border-white" : "bg-transparent text-gray-600"}`}
+            className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md px-2 sm:px-0 ${activeTab === "Studio" ? "text-black-600 bg-surface border border-surface" : "bg-transparent text-gray-600"}`}
           >
             Studio
-            <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-[#fff3eb]">
+            <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-surface-tint">
               {tabCounts.Studio}
             </span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("Indoor")}
-            className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md px-2 sm:px-0 ${activeTab === "Indoor" ? "text-black-600 bg-white border border-white" : "bg-transparent text-gray-600"}`}
+            className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md px-2 sm:px-0 ${activeTab === "Indoor" ? "text-black-600 bg-surface border border-surface" : "bg-transparent text-gray-600"}`}
           >
             Indoor
-            <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-[#fff3eb]">
+            <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-surface-tint">
               {tabCounts.Indoor}
             </span>
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("Outdoor")}
-            className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md px-2 sm:px-0 ${activeTab === "Outdoor" ? "text-black-600 bg-white border border-white" : "bg-transparent text-gray-600"}`}
+            className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md px-2 sm:px-0 ${activeTab === "Outdoor" ? "text-black-600 bg-surface border border-surface" : "bg-transparent text-gray-600"}`}
           >
             Outdoor
-            <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-[#fff3eb]">
+            <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-surface-tint">
               {tabCounts.Outdoor}
             </span>
           </button>
@@ -89,7 +89,7 @@ export default function BackgroundGallery({ selectedBackgroundIds, setSelectedBa
       </div>
 
       <div className="relative overflow-y-auto mt-2 no-scrollbar pb-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
           {currentBackgrounds.map((bg) => {
             const isSelected = selectedIds.has(bg.id);
             return (
@@ -100,11 +100,11 @@ export default function BackgroundGallery({ selectedBackgroundIds, setSelectedBa
                 onClick={() => toggleSelection(bg.id)}
                 onKeyDown={(e) => e.key === "Enter" && toggleSelection(bg.id)}
                 className={`rounded-xl border overflow-hidden flex flex-col transition-all cursor-pointer ${
-                  isSelected ? "border-orange-300 bg-[#fff3eb]" : "border-gray-200 bg-white hover:shadow-md"
+                  isSelected ? "border-orange-300 bg-surface-tint" : "border-border bg-surface hover:shadow-md"
                 }`}
               >
                 <div
-                  className={`px-4 py-3.5 flex items-center justify-between border-b ${isSelected ? "border-orange-300" : "border-gray-200"}`}
+                  className={`px-4 py-3.5 flex items-center justify-between border-b ${isSelected ? "border-orange-300" : "border-border"}`}
                 >
                   <p className="text-sm font-medium text-black-600 leading-[120%]">
                     {bg.name}
@@ -114,11 +114,12 @@ export default function BackgroundGallery({ selectedBackgroundIds, setSelectedBa
                     width={16}
                     height={16}
                     alt="like icon"
+                    className="hidden"
                   />
                 </div>
                 <div className="relative p-4 flex justify-center items-center">
                   <div
-                    className={`rounded-xl w-full p-1.5 relative h-[18rem] overflow-hidden border ${isSelected ? "border-orange-600" : "border-gray-200"} bg-white`}
+                    className={`rounded-xl w-full p-1.5 relative h-[12rem] sm:h-[14rem] md:h-[16rem] lg:h-[18rem] overflow-hidden border ${isSelected ? "border-orange-600" : "border-border"} bg-surface`}
                   >
                     <Image
                       src={bg.imageUrl}

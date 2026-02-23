@@ -21,11 +21,12 @@ export default function Sidebar() {
   return (
     <aside className="w-full h-full flex flex-col relative overflow-hidden">
       {/* Logo */}
-      <div className="flex items-center gap-2 max-h-[70px] h-[70px] relative w-full justify-center">
+      <div className="flex items-center gap-2 h-[60px] border-b border-black/5 relative w-full justify-start">
         <Image
           src="/assets/dummy-logo.svg"
           alt="Try On Lens Logo"
-          fill
+          width={200}
+          height={40}
           className="object-contain p-4"
         />
       </div>
@@ -45,15 +46,15 @@ export default function Sidebar() {
         </div>
 
         {/* ASSETS Section */}
-        <div className="relative flex flex-col gap-2 leading-[120%]">
-          <h3 className="text-[13px] font-semibold text-[#525866] uppercase">
+        {/* <div className="relative flex flex-col gap-2 leading-[120%] cursor-not-allowed opacity-[0.2]">
+          <h3 className="text-[13px] font-semibold text-gray-600 uppercase">
             ASSETS
           </h3>
           <nav className="flex flex-col gap-2">
             {assetsItems.map((item) => (
               <button
                 key={item.label}
-                className="w-full px-3 py-[11px] flex items-center gap-2 font-medium  text-sm leading-[120%] text-[#525866]"
+                className="w-full px-3 py-[11px] flex items-center gap-2 font-medium  text-sm leading-[120%] text-gray-600"
               >
                 <Image
                   src={item.icon}
@@ -65,18 +66,18 @@ export default function Sidebar() {
               </button>
             ))}
           </nav>
-        </div>
+        </div> */}
 
         {/* GENERAL Section */}
-        <div className="relative">
-          <h3 className="text-[13px] font-semibold text-[#525866] uppercase tracking-wide mb-2">
+        <div className="relative cursor-not-allowed opacity-[0.2]">
+          <h3 className="text-[13px] font-semibold text-gray-600 uppercase tracking-wide mb-2">
             GENERAL
           </h3>
           <nav className="space-y-1">
             {generalItems.map((item) => (
               <button
                 key={item.label}
-                className="w-full px-3 py-[11px] flex items-center gap-2 font-medium text-sm leading-[120%] text-[#525866]"
+                className="w-full px-3 py-[11px] flex items-center gap-2 font-medium text-sm leading-[120%] text-gray-600"
               >
                 <Image
                   src={item.icon}
@@ -91,11 +92,11 @@ export default function Sidebar() {
         </div>
 
         {/* Unlock Pro Callout */}
-        {/* <div className="mt-auto p-4 bg-[#f2f5f8] rounded-[14px] gap-2 flex flex-col relative">
+        {/* <div className="mt-auto p-4 bg-surface-muted rounded-[14px] gap-2 flex flex-col relative">
           <h4 className="font-semibold leading-[120%] text-black-600">
             Unlock Pro! 👑
           </h4>
-          <p className="text-[13px] text-[#525866] leading-[140%] font-normal mb-2">
+          <p className="text-[13px] text-gray-600 leading-[140%] font-normal mb-2">
             Upgrade your account to unlock all benefits.
           </p>
           <button className="w-full px-[14px] py-3 bg-orange-600 text-white rounded-md flex items-center justify-center gap-2 ">

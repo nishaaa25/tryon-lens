@@ -16,8 +16,11 @@ function formatAgeGroup(age: string): string {
 }
 
 function formatLabel(m: DataModel): string {
-  const ethnicity = String(m.ethnicity).charAt(0).toUpperCase() + String(m.ethnicity).slice(1);
-  const body = String(m["body-type"]).charAt(0).toUpperCase() + String(m["body-type"]).slice(1);
+  const ethnicity =
+    String(m.ethnicity).charAt(0).toUpperCase() + String(m.ethnicity).slice(1);
+  const body =
+    String(m["body-type"]).charAt(0).toUpperCase() +
+    String(m["body-type"]).slice(1);
   return `${body} (${ethnicity})`;
 }
 
@@ -25,35 +28,74 @@ function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 }
 
-type FilterState = { ethnicity: string[]; bodyType: string[]; ageGroup: string[] };
+type FilterState = {
+  ethnicity: string[];
+  bodyType: string[];
+  ageGroup: string[];
+};
 
 const emptyFilters: FilterState = { ethnicity: [], bodyType: [], ageGroup: [] };
+
+type TabId = "men" | "women" | "boy" | "girl";
+
+const TAB_CONFIG: { id: TabId; label: string }[] = [
+  { id: "women", label: "Women" },
+  { id: "men", label: "Men" },
+  { id: "girl", label: "Girl" },
+  { id: "boy", label: "Boy" },
+];
+
+function getModelsForTab(tab: TabId): DataModel[] {
+  if (tab === "women") return womenModels;
+  if (tab === "girl") return [];
+  if (tab === "men") return menModels;
+  return [];
+}
 
 type ModelsGalleryProps = {
   selectedModelIds: Set<string>;
   setSelectedModelIds: React.Dispatch<React.SetStateAction<Set<string>>>;
 };
 
-export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }: ModelsGalleryProps) {
-  const [activeTab, setActiveTab] = useState<"women" | "men">("women");
+export default function ModelsGallery({
+  selectedModelIds,
+  setSelectedModelIds,
+}: ModelsGalleryProps) {
+  const [activeTab, setActiveTab] = useState<TabId>("women");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filtersWomen, setFiltersWomen] = useState<FilterState>(emptyFilters);
+  const [filtersGirl, setFiltersGirl] = useState<FilterState>(emptyFilters);
   const [filtersMen, setFiltersMen] = useState<FilterState>(emptyFilters);
+  const [filtersBoy, setFiltersBoy] = useState<FilterState>(emptyFilters);
   const [previewModelId, setPreviewModelId] = useState<string | null>(null);
 
-  const currentModels = activeTab === "women" ? womenModels : menModels;
-  const currentFilters = activeTab === "women" ? filtersWomen : filtersMen;
-  const setCurrentFilters = activeTab === "women" ? setFiltersWomen : setFiltersMen;
+  const currentModels = useMemo(() => getModelsForTab(activeTab), [activeTab]);
+  const currentFilters =
+    activeTab === "women"
+      ? filtersWomen
+      : activeTab === "girl"
+        ? filtersGirl
+        : activeTab === "men"
+          ? filtersMen
+          : filtersBoy;
+  const setCurrentFilters =
+    activeTab === "women"
+      ? setFiltersWomen
+      : activeTab === "girl"
+        ? setFiltersGirl
+        : activeTab === "men"
+          ? setFiltersMen
+          : setFiltersBoy;
   const allModels = useMemo(() => [...womenModels, ...menModels], []);
 
-  const setActiveTabAndClearOther = (tab: "women" | "men") => {
+  const setActiveTabAndClearOther = (tab: TabId) => {
     if (tab === activeTab) return;
     setActiveTab(tab);
-    setSelectedModelIds((prev) => {
-      const keepIds = tab === "women" ? womenModels : menModels;
-      const keepSet = new Set(keepIds.map((m) => m.id));
-      return new Set(Array.from(prev).filter((id) => keepSet.has(id)));
-    });
+    const tabModels = getModelsForTab(tab);
+    const keepSet = new Set(tabModels.map((m) => m.id));
+    setSelectedModelIds(
+      (prev) => new Set(Array.from(prev).filter((id) => keepSet.has(id))),
+    );
   };
 
   const filterOptions = useMemo(() => {
@@ -75,25 +117,32 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
   const filteredModels = useMemo(() => {
     const { ethnicity, bodyType, ageGroup } = currentFilters;
     return currentModels.filter((m) => {
-      if (ethnicity.length > 0 && !ethnicity.includes(String(m.ethnicity))) return false;
-      if (bodyType.length > 0 && !bodyType.includes(String(m["body-type"]))) return false;
-      if (ageGroup.length > 0 && !ageGroup.includes(String(m["age-group"]))) return false;
+      if (ethnicity.length > 0 && !ethnicity.includes(String(m.ethnicity)))
+        return false;
+      if (bodyType.length > 0 && !bodyType.includes(String(m["body-type"])))
+        return false;
+      if (ageGroup.length > 0 && !ageGroup.includes(String(m["age-group"])))
+        return false;
       return true;
     });
   }, [currentModels, currentFilters]);
 
-  const selectedIdsInOrder = useMemo(() => Array.from(selectedModelIds), [selectedModelIds]);
+  const selectedIdsInOrder = useMemo(
+    () => Array.from(selectedModelIds),
+    [selectedModelIds],
+  );
   const selectedModelsForSlots = useMemo(
-    () => selectedIdsInOrder.map((id) => allModels.find((m) => m.id === id)).filter(Boolean) as DataModel[],
+    () =>
+      selectedIdsInOrder
+        .map((id) => allModels.find((m) => m.id === id))
+        .filter(Boolean) as DataModel[],
     [selectedIdsInOrder, allModels],
   );
 
   const toggleModelSelection = (modelId: string) => {
     setSelectedModelIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(modelId)) next.delete(modelId);
-      else if (next.size < 4) next.add(modelId);
-      return next;
+      if (prev.has(modelId)) return new Set<string>();
+      return new Set([modelId]);
     });
   };
 
@@ -121,11 +170,23 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
   const removeChip = (chip: string) => {
     const { ethnicity, bodyType, ageGroup } = currentFilters;
     const eth = filterOptions.ethnicity.find((e) => capitalize(e) === chip);
-    if (eth !== undefined) return setCurrentFilters({ ...currentFilters, ethnicity: ethnicity.filter((v) => v !== eth) });
+    if (eth !== undefined)
+      return setCurrentFilters({
+        ...currentFilters,
+        ethnicity: ethnicity.filter((v) => v !== eth),
+      });
     const body = filterOptions.bodyType.find((b) => capitalize(b) === chip);
-    if (body !== undefined) return setCurrentFilters({ ...currentFilters, bodyType: bodyType.filter((v) => v !== body) });
+    if (body !== undefined)
+      return setCurrentFilters({
+        ...currentFilters,
+        bodyType: bodyType.filter((v) => v !== body),
+      });
     const age = filterOptions.ageGroup.find((a) => formatAgeGroup(a) === chip);
-    if (age !== undefined) return setCurrentFilters({ ...currentFilters, ageGroup: ageGroup.filter((v) => v !== age) });
+    if (age !== undefined)
+      return setCurrentFilters({
+        ...currentFilters,
+        ageGroup: ageGroup.filter((v) => v !== age),
+      });
   };
 
   const resetFilters = () => {
@@ -142,16 +203,16 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
               Models Gallery
             </h2>
             <p className="text-sm leading-[140%] font-medium text-gray-600 ">
-              Select up to 4 models
+              Select one model
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {[0, 1, 2, 3].map((idx) => {
+            {[0].map((idx) => {
               const model = selectedModelsForSlots[idx];
               return (
                 <div
                   key={idx}
-                  className="h-12 w-12 rounded-md border border-gray-200 overflow-hidden relative bg-[#f2f5f8] flex-shrink-0"
+                  className="h-12 w-12 rounded-md border border-border overflow-hidden relative bg-surface-muted flex-shrink-0"
                 >
                   {model ? (
                     <Image
@@ -167,35 +228,31 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
           </div>
         </div>
 
-        {/* Tabs */}
+        {/* Tabs: Women, Girl, Men, Boy */}
         <div className="relative flex flex-wrap justify-between items-center gap-2">
-          <div className="inline-flex flex-wrap rounded-lg bg-[#f2f5f8] p-1 text-sm leading-[120%] border border-gray-200 font-medium gap-1">
-            <button
-              type="button"
-              onClick={() => setActiveTabAndClearOther("women")}
-              className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md text-black-600 px-2 sm:px-0 ${activeTab === "women" ? "border border-white bg-white" : ""}`}
-            >
-              Women
-              <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-[#fff3eb]">
-                {womenModels.length}
-              </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTabAndClearOther("men")}
-              className={`min-w-0 flex-1 sm:flex-none sm:w-[133px] py-1.5 rounded-md text-black-600 px-2 sm:px-0 ${activeTab === "men" ? "border border-white bg-white" : ""}`}
-            >
-              Men
-              <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-[#fff3eb]">
-                {menModels.length}
-              </span>
-            </button>
+          <div className="inline-flex flex-wrap rounded-lg bg-surface-muted p-1 text-sm leading-[120%] border border-border font-medium gap-1">
+            {TAB_CONFIG.map(({ id, label }) => {
+              const count = getModelsForTab(id).length;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setActiveTabAndClearOther(id)}
+                  className={`min-w-0 flex-1 sm:flex-none py-1.5 rounded-md text-black-600 px-2 sm:px-3 ${activeTab === id ? "border border-surface bg-surface" : ""}`}
+                >
+                  {label}
+                  <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-surface-tint">
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setIsFiltersOpen(true)}
-              className="inline-flex items-center gap-2 rounded-md border border-gray-200 font-medium bg-white px-3 py-[10px] text-sm leading-[120%] text-black-600  hover:bg-gray-50"
+              className="inline-flex items-center gap-2 rounded-md border border-border font-medium bg-surface px-3 py-[10px] text-sm leading-[120%] text-black-600  hover:bg-gray-50"
             >
               <Image
                 src="/assets/filter.svg"
@@ -210,7 +267,7 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
 
         {/* Grid */}
         <div className="relative overflow-y-auto mt-2 no-scrollbar pb-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
             {filteredModels.map((model) => {
               const isSelected = selectedModelIds.has(model.id);
               const label = formatLabel(model);
@@ -220,13 +277,17 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
                   role="button"
                   tabIndex={0}
                   onClick={() => toggleModelSelection(model.id)}
-                  onKeyDown={(e) => e.key === "Enter" && toggleModelSelection(model.id)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && toggleModelSelection(model.id)
+                  }
                   className={`rounded-xl border overflow-hidden flex flex-col transition-all cursor-pointer ${
-                    isSelected ? "border-orange-300 bg-[#fff3eb]" : "border-gray-200 bg-white"
+                    isSelected
+                      ? "border-orange-300 bg-surface-tint"
+                      : "border-border bg-surface"
                   }`}
                 >
                   <div
-                    className={`px-4 py-3.5 flex items-center justify-between border-b ${isSelected ? "border-orange-300" : "border-gray-200"}`}
+                    className={`px-4 py-3.5 flex items-center justify-between border-b ${isSelected ? "border-orange-300" : "border-border"}`}
                   >
                     <p className="text-sm font-medium text-black-600 leading-[120%]">
                       {label}
@@ -236,11 +297,12 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
                       width={16}
                       height={16}
                       alt="like icon"
+                      className="hidden"
                     />
                   </div>
                   <div className="relative p-4 flex justify-center items-center">
                     <div
-                      className={`rounded-xl w-full p-1.5 relative h-[12rem] overflow-hidden border ${isSelected ? "border-orange-600" : "border-gray-200"} bg-white`}
+                      className={`rounded-xl w-full p-1.5 relative h-[12rem] overflow-hidden border ${isSelected ? "border-orange-600" : "border-border"} bg-surface`}
                     >
                       <Image
                         src={model.frontImage}
@@ -255,13 +317,13 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
                             e.stopPropagation();
                             setPreviewModelId(model.id);
                           }}
-                          className="relative inline-flex items-center cursor-pointer gap-1 rounded-full bg-white border border-gray-200 px-2 py-1 text-[13px] leading-[120%] text-gray-600"
+                          className="relative inline-flex items-center cursor-pointer gap-1 rounded-full bg-surface border border-border px-2 py-1 text-[10px] leading-[120%] text-gray-600"
                         >
                           <Image
                             src="/assets/preview-eye.svg"
                             alt="preview eye"
-                            width={16}
-                            height={16}
+                            width={13}
+                            height={13}
                           />
                           <span>Preview</span>
                         </button>
@@ -276,10 +338,10 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
                       </div>
                       <div
                         role="presentation"
-                        className="absolute bottom-1.5 right-1.5 inline-flex items-center justify-center gap-1 rounded-full bg-white border border-gray-200 px-2 py-1 text-[13px] leading-[120%] text-gray-600 pointer-events-none"
+                        className="absolute bottom-1.5 right-1.5 inline-flex items-center justify-center gap-1 rounded-full bg-surface border border-border px-2 py-1 text-[10px] leading-[120%] text-gray-600 pointer-events-none"
                       >
                         <span>{formatAgeGroup(model["age-group"])}</span>
-                        <div className="w-[1px] h-2 bg-[#e1e4ea] mt-[2px]" />
+                        <div className="w-[1px] h-2 bg-gray-200 mt-[2px]" />
                         <span>{String(model["body-type"])}</span>
                       </div>
                     </div>
@@ -294,9 +356,9 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
       {/* Filters Modal */}
       {isFiltersOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg mx-4 bg-white rounded-2xl  border border-gray-200 overflow-hidden">
+          <div className="w-full max-w-lg mx-4 bg-surface rounded-2xl  border border-border overflow-hidden">
             {/* Modal header */}
-            <div className="px-4 py-[14px] flex items-center justify-between border-b border-gray-200">
+            <div className="px-4 py-[14px] flex items-center justify-between border-b border-border">
               <h3 className="text-xl leading-[120%] font-semibold text-black-600">
                 Filters
               </h3>
@@ -350,7 +412,9 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
               {/* Ethnicity – from data */}
               <div className="relative flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-base font-semibold text-black-600">Ethnicity</p>
+                  <p className="text-base font-semibold text-black-600">
+                    Ethnicity
+                  </p>
                   <span className="text-gray-500">⌃</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
@@ -360,13 +424,25 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
                         type="checkbox"
                         checked={currentFilters.ethnicity.includes(value)}
                         onChange={() =>
-                          toggleInList(value, currentFilters.ethnicity, (next) =>
-                            setCurrentFilters({ ...currentFilters, ethnicity: next }),
+                          toggleInList(
+                            value,
+                            currentFilters.ethnicity,
+                            (next) =>
+                              setCurrentFilters({
+                                ...currentFilters,
+                                ethnicity: next,
+                              }),
                           )
                         }
                         className="h-5 w-5 accent-orange-500"
                       />
-                      <span className={currentFilters.ethnicity.includes(value) ? "text-black-600 font-medium" : "text-gray-600 font-normal"}>
+                      <span
+                        className={
+                          currentFilters.ethnicity.includes(value)
+                            ? "text-black-600 font-medium"
+                            : "text-gray-600 font-normal"
+                        }
+                      >
                         {capitalize(value)}
                       </span>
                     </label>
@@ -379,7 +455,9 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
               {/* Body type – from data */}
               <div className="relative flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-base font-semibold text-black-600">Body type</p>
+                  <p className="text-base font-semibold text-black-600">
+                    Body type
+                  </p>
                   <span className="text-gray-500">⌃</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
@@ -390,12 +468,21 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
                         checked={currentFilters.bodyType.includes(value)}
                         onChange={() =>
                           toggleInList(value, currentFilters.bodyType, (next) =>
-                            setCurrentFilters({ ...currentFilters, bodyType: next }),
+                            setCurrentFilters({
+                              ...currentFilters,
+                              bodyType: next,
+                            }),
                           )
                         }
                         className="h-5 w-5 accent-orange-500"
                       />
-                      <span className={currentFilters.bodyType.includes(value) ? "text-black-600 font-medium" : "text-gray-600 font-normal"}>
+                      <span
+                        className={
+                          currentFilters.bodyType.includes(value)
+                            ? "text-black-600 font-medium"
+                            : "text-gray-600 font-normal"
+                        }
+                      >
                         {capitalize(value)}
                       </span>
                     </label>
@@ -419,12 +506,21 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
                         checked={currentFilters.ageGroup.includes(value)}
                         onChange={() =>
                           toggleInList(value, currentFilters.ageGroup, (next) =>
-                            setCurrentFilters({ ...currentFilters, ageGroup: next }),
+                            setCurrentFilters({
+                              ...currentFilters,
+                              ageGroup: next,
+                            }),
                           )
                         }
                         className="h-5 w-5 accent-orange-500"
                       />
-                      <span className={currentFilters.ageGroup.includes(value) ? "text-black-600 font-medium" : "text-gray-600 font-normal"}>
+                      <span
+                        className={
+                          currentFilters.ageGroup.includes(value)
+                            ? "text-black-600 font-medium"
+                            : "text-gray-600 font-normal"
+                        }
+                      >
                         {formatAgeGroup(value)}
                       </span>
                     </label>
@@ -434,20 +530,21 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
             </div>
 
             {/* Modal footer */}
-            <div className="px-6 py-3 border-t border-gray-200 flex items-center justify-between bg-white relative">
+            <div className="px-6 py-3 border-t border-border flex items-center justify-between bg-surface relative">
               <button
                 type="button"
                 onClick={resetFilters}
-                className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
+                className="inline-flex items-center rounded-lg border border-gray-300 bg-surface px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
               >
                 Reset
               </button>
               <button
                 type="button"
                 onClick={() => setIsFiltersOpen(false)}
-                className="inline-flex items-center rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white hover:bg-black"
+                className="inline-flex items-center rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white hover:bg-gray-900"
               >
-                Show {filteredModels.length} Model{filteredModels.length !== 1 ? "s" : ""}
+                Show {filteredModels.length} Model
+                {filteredModels.length !== 1 ? "s" : ""}
               </button>
             </div>
           </div>
@@ -455,54 +552,57 @@ export default function ModelsGallery({ selectedModelIds, setSelectedModelIds }:
       )}
 
       {/* Preview Modal */}
-      {previewModelId && (() => {
-        const previewModel = [...womenModels, ...menModels].find((m) => m.id === previewModelId);
-        const poses = previewModel?.modelPoses?.map((p) => p.imageUrl) ?? [];
-        const previewImages = previewModel
-          ? [previewModel.frontImage, ...poses.slice(0, 2)]
-          : [];
-        return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl border border-gray-200 overflow-hidden">
-              <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {previewModel ? formatLabel(previewModel) : "Model"} Preview
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setPreviewModelId(null)}
-                  className="flex items-center justify-center relative cursor-pointer"
-                  aria-label="Close preview"
-                >
-                  <Image
-                    src="/assets/cross.svg"
-                    alt="close icon"
-                    width={24}
-                    height={24}
-                  />
-                </button>
-              </div>
-              <div className="p-4 relative">
-                <div className="grid relative grid-cols-1 md:grid-cols-3 gap-4">
-                  {previewImages.map((src, idx) => (
-                    <div
-                      key={idx}
-                      className="aspect-[3/5] relative bg-gray-50 rounded-xl overflow-hidden"
-                    >
-                      <Image
-                        src={src}
-                        alt="Model preview"
-                        className="w-full h-full object-cover rounded-lg"
-                        fill
-                      />
-                    </div>
-                  ))}
+      {previewModelId &&
+        (() => {
+          const previewModel = [...womenModels, ...menModels].find(
+            (m) => m.id === previewModelId,
+          );
+          const poses = previewModel?.modelPoses?.map((p) => p.imageUrl) ?? [];
+          const previewImages = previewModel
+            ? [previewModel.frontImage, ...poses.slice(0, 2)]
+            : [];
+          return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+              <div className="w-full max-w-5xl mx-4 bg-surface rounded-2xl border border-border overflow-hidden">
+                <div className="flex items-center justify-between p-4 border-b border-border">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {previewModel ? formatLabel(previewModel) : "Model"} Preview
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewModelId(null)}
+                    className="flex items-center justify-center relative cursor-pointer"
+                    aria-label="Close preview"
+                  >
+                    <Image
+                      src="/assets/cross.svg"
+                      alt="close icon"
+                      width={24}
+                      height={24}
+                    />
+                  </button>
+                </div>
+                <div className="p-4 relative">
+                  <div className="grid relative grid-cols-1 md:grid-cols-3 gap-4">
+                    {previewImages.map((src, idx) => (
+                      <div
+                        key={idx}
+                        className="aspect-[2/3] relative bg-gray-50 rounded-xl overflow-hidden"
+                      >
+                        <Image
+                          src={src}
+                          alt="Model preview"
+                          className="w-full h-full object-cover rounded-lg"
+                          fill
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
     </>
   );
 }

@@ -25,12 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${dmSans.variable} antialiased w-full min-h-screen lg:h-screen flex flex-col lg:flex-row justify-center items-stretch bg-white relative overflow-x-hidden`}
+        className={`${dmSans.variable} antialiased w-full h-dvh min-h-0 lg:min-h-screen lg:h-screen flex flex-col lg:flex-row justify-center items-stretch bg-background relative overflow-x-hidden overflow-y-hidden`}
       >
         <div className="hidden lg:block lg:min-w-60 lg:w-60 relative lg:h-full shrink-0">
           <Sidebar />
         </div>
-        <div className="flex flex-col w-full min-w-0 relative flex-1 lg:h-full overflow-hidden">
+        <div className="flex flex-col w-full min-w-0 min-h-0 relative flex-1 lg:h-full overflow-hidden">
           <Suspense fallback={<header className="w-full h-[70px]" />}>
             <HeaderWithLogin />
           </Suspense>

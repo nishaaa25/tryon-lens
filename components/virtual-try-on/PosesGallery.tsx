@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import React from "react";
+import type { ProductType } from "@/components/StepOneForm";
 
 type DataModel = {
   id: string;
@@ -10,12 +11,21 @@ type DataModel = {
 };
 
 type PosesGalleryProps = {
+  productType: ProductType;
   selectedModels: DataModel[];
   selectedPoseKeys: Set<string>;
   setSelectedPoseKeys: React.Dispatch<React.SetStateAction<Set<string>>>;
 };
 
-export default function PosesGallery({ selectedModels, selectedPoseKeys, setSelectedPoseKeys }: PosesGalleryProps) {
+function poseMatchesProductType(viewType: string, productType: ProductType): boolean {
+  const v = viewType.toLowerCase();
+  if (productType === "Upper body") return v.includes("waist-up");
+  if (productType === "Full body") return v.includes("full body");
+  if (productType === "Lower body") return v.includes("three-quarter") || v.includes("above knees") || v.includes("knees");
+  return true;
+}
+
+export default function PosesGallery({ productType, selectedModels, selectedPoseKeys, setSelectedPoseKeys }: PosesGalleryProps) {
   const togglePoseSelection = (modelId: string, poseIndex: number) => {
     const key = `${modelId}-${poseIndex}`;
     setSelectedPoseKeys((prev) => {
@@ -28,18 +38,21 @@ export default function PosesGallery({ selectedModels, selectedPoseKeys, setSele
 
   const allPoses = React.useMemo(() => {
     const list: { key: string; modelId: string; poseIndex: number; imageUrl: string }[] = [];
+    const unfiltered: { key: string; modelId: string; poseIndex: number; imageUrl: string }[] = [];
     selectedModels.forEach((model) => {
       (model.modelPoses ?? []).forEach((pose, poseIndex) => {
-        list.push({
+        const entry = {
           key: `${model.id}-${poseIndex}`,
           modelId: model.id,
           poseIndex,
           imageUrl: pose.imageUrl,
-        });
+        };
+        unfiltered.push(entry);
+        if (poseMatchesProductType(pose.viewType, productType)) list.push(entry);
       });
     });
-    return list;
-  }, [selectedModels]);
+    return list.length > 0 ? list : unfiltered;
+  }, [selectedModels, productType]);
 
   const keyToImageUrl = React.useMemo(
     () => Object.fromEntries(allPoses.map((p) => [p.key, p.imageUrl])),
@@ -57,9 +70,6 @@ export default function PosesGallery({ selectedModels, selectedPoseKeys, setSele
           <h2 className="text-xl leading-[120%] font-semibold text-black-600 mb-1">
             Poses Gallery
           </h2>
-          <p className="text-sm leading-[140%] font-medium text-gray-600 mb-[14px]">
-            Select upto 4 poses
-          </p>
         </div>
         <div className="flex items-center gap-2">
           {[0, 1, 2, 3].map((idx) => {
@@ -67,7 +77,7 @@ export default function PosesGallery({ selectedModels, selectedPoseKeys, setSele
             return (
               <div
                 key={idx}
-                className="h-12 w-12 rounded-md border border-gray-200 overflow-hidden relative bg-[#f2f5f8] shrink-0"
+                className="h-12 w-12 rounded-md border border-border overflow-hidden relative bg-surface-muted shrink-0"
               >
                 {poseImageUrl ? (
                   <Image
@@ -89,7 +99,7 @@ export default function PosesGallery({ selectedModels, selectedPoseKeys, setSele
             Select models in the previous step to see their poses here.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
             {allPoses.map(({ key, modelId, poseIndex, imageUrl }) => {
               const isSelected = selectedPoseKeys.has(key);
               return (
@@ -97,10 +107,10 @@ export default function PosesGallery({ selectedModels, selectedPoseKeys, setSele
                   key={key}
                   type="button"
                   onClick={() => togglePoseSelection(modelId, poseIndex)}
-                  className={`${isSelected ? "border-orange-300 bg-[#fff3eb]" : "border-gray-200 bg-white"} border p-4 rounded-xl gap-4 overflow-hidden`}
+                  className={`${isSelected ? "border-orange-300 bg-surface-tint" : "border-border bg-surface"} border p-4 rounded-xl gap-4 overflow-hidden`}
                 >
                   <div
-                    className={`rounded-xl p-1.5 relative h-64 sm:h-72 md:h-[20rem] overflow-hidden ${isSelected ? "border border-orange-600" : "border border-gray-200"}`}
+                    className={`rounded-xl p-1.5 relative h-[14rem] sm:h-[16rem] md:h-[20rem] overflow-hidden ${isSelected ? "border border-orange-600" : "border border-border"}`}
                   >
                     <Image
                       src={imageUrl}
@@ -109,7 +119,7 @@ export default function PosesGallery({ selectedModels, selectedPoseKeys, setSele
                       className="w-full absolute top-0 left-0 object-cover"
                     />
                     <div className="relative flex justify-between items-start">
-                      <div className="relative bg-white p-1.5 rounded-full flex justify-center items-center border border-gray-200 w-7 h-7">
+                      <div className="relative bg-surface p-1.5 rounded-full flex justify-center items-center border border-border w-7 h-7 hidden">
                         <Image
                           src="/assets/like.svg"
                           alt="like icon"

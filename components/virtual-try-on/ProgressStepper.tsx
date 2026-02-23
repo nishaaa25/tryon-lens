@@ -26,7 +26,7 @@ export default function ProgressStepper({
   ];
 
   return (
-    <div className="w-full rounded-xl border border-gray-200 bg-white p-3 sm:p-4 relative stepper-gradient overflow-x-auto">
+    <div className="w-full rounded-xl border border-border bg-surface p-3 sm:p-4 relative stepper-gradient overflow-x-auto">
       <div className="flex items-center gap-1 sm:gap-2 min-w-max">
       {steps.map((step, index) => {
         const hasSelection = !!completedSteps[step.number];
@@ -39,7 +39,7 @@ export default function ProgressStepper({
             onClick={onStepChange ? () => onStepChange(step.number) : undefined}
             className={`flex items-center gap-1 sm:gap-[6px] leading-[120%] pr-2 sm:pr-4 p-1.5 sm:p-[6px] rounded-lg text-xs sm:text-sm transition-colors shrink-0 ${
               isActive
-                ? 'bg-[#fff3eb] border border-orange-300 text-black-600 font-semibold '
+                ? 'bg-surface-tint border border-orange-300 text-black-600 font-semibold '
                 : isCompleted
                   ? 'text-orange-600 font-medium border border-transparent '
                   : 'text-gray-600 font-medium border border-transparent '
@@ -51,7 +51,7 @@ export default function ProgressStepper({
                 <Image src="/assets/white-tick.svg" alt="completed" width={14} height={14} className="relative w-3 h-3 sm:w-[14px] sm:h-[14px]" />
               </div>
             ) : (
-              <div className={`${isActive ? "bg-orange-600 text-white" : "bg-[#f2f5f8]"} h-7 w-7 sm:h-[30px] sm:w-[30px] flex items-center justify-center rounded-md shrink-0 text-xs sm:text-base`}>{step.number}</div>
+              <div className={`${isActive ? "bg-orange-600 text-white" : "bg-surface-muted"} h-7 w-7 sm:h-[30px] sm:w-[30px] flex items-center justify-center rounded-md shrink-0 text-xs sm:text-base`}>{step.number}</div>
             )}
             <span className="whitespace-nowrap hidden sm:inline">{step.label}</span>
           </button>

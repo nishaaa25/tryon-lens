@@ -31,7 +31,7 @@ export default function ImageGuide() {
   ];
 
   return (
-    <div className="w-full relative rounded-2xl border border-gray-200 p-4  h-full leading-[120%] flex flex-col gap-4 overflow-y-auto image-gallery-bg">
+    <div className="w-full relative rounded-2xl border border-border p-4  h-full leading-[120%] flex flex-col gap-4 overflow-y-auto image-gallery-bg">
       <div className="relative">
         <h3 className="text-base font-semibold text-black-600 mb-2">
           Image Guide
@@ -45,7 +45,7 @@ export default function ImageGuide() {
         {examples.map((example, index) => (
           <div
             key={index}
-            className="relative border border-gray-200 h-50 rounded-lg p-2 flex flex-col gap-4  bg-white"
+            className="relative border border-border h-50 rounded-lg p-2 flex flex-col gap-4  bg-surface"
           >
             <div className="flex gap-1 items-center relative">
               <Image
@@ -70,7 +70,7 @@ export default function ImageGuide() {
           </div>
         ))}
       </div>
-      <div className="bg-[#E9354417] p-[10px] w-full flex gap-2 rounded-lg text-sm font-semibold leading-[120%] text-black-600 mt-2 gap-[6px]">
+      <div className="bg-alert-bg p-[10px] w-full flex gap-2 rounded-lg text-sm font-semibold leading-[120%] text-black-600 mt-2 gap-[6px]">
         <Image
           src="/assets/red-cross.svg"
           alt="red-cross"
@@ -84,7 +84,7 @@ export default function ImageGuide() {
         {examples.map((example, index) => (
           <div
             key={index}
-            className="relative border border-gray-200 h-50 rounded-lg p-2 flex flex-col gap-4  bg-white"
+            className="relative border border-border h-50 rounded-lg p-2 flex flex-col gap-4  bg-surface"
           >
             <div className="flex gap-1 items-center relative">
               <Image
