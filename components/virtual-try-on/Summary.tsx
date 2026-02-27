@@ -101,11 +101,11 @@ export default function Summary({
   const photoCount = poseCount * (selectedBackgrounds.length || 1);
 
   return (
-    <div className="flex flex-col min-h-0 flex-1 overflow-y-auto gap-3.5">
+    <div className="flex flex-col h-full flex-1 overflow-hidden gap-3.5 relative">
       <h2 className="text-xl leading-[120%] font-semibold text-black-600 mb-1 shrink-0">
         Summary
       </h2>
-      <div className="flex flex-col lg:flex-row justify-center items-stretch gap-4 lg:gap-5 relative min-h-0 flex-1 lg:overflow-hidden no-scrollbar">
+      <div className="flex flex-col lg:flex-row justify-center items-stretch gap-4 lg:gap-5 relative flex-1 lg:overflow-hidden no-scrollbar">
         <div className="flex flex-col border gap-4 w-full lg:w-[73%] border-border rounded-2xl bg-surface lg:h-full shrink-0 lg:shrink min-h-0">
           <h3 className="text-base leading-[120%] p-4 border-b border-border font-semibold text-black-600 shrink-0">
             Product Images
