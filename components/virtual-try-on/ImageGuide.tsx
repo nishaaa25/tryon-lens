@@ -2,31 +2,45 @@ import Image from "next/image";
 import React from "react";
 
 interface GuideExample {
-  icon: string;
   label: string;
   good: boolean;
-  description: string;
+  image: string;
 }
 
 export default function ImageGuide() {
   const examples: GuideExample[] = [
     {
-      icon: "☀️",
       label: "Evenly-Lit",
       good: true,
-      description: "",
+      image: "/assets/Images/Image 2.png",
     },
     {
-      icon: "🌑",
       label: "Not Well Lit",
       good: false,
-      description: "Shadows make it hard for the AI to interpret colours.",
+      image: "/assets/Images/images 1.webp",
     },
     {
-      icon: "📸",
       label: "Clear Product",
       good: true,
-      description: "",
+      image: "/assets/Images/Imgae 3.png",
+    }
+  ];
+
+  const badExamples: GuideExample[] = [
+    {
+      label: "Cluttered ",
+      good: false,
+      image: "/assets/Images/Not to image 2.png",
+    },
+    {
+      label: "Obstructed",
+      good: false,
+      image: "/assets/Images/Not to image 1.png",
+    },
+    {
+      label: "Low Resolution",
+      good: false,
+      image: "/assets/Images/Not to image 2.png",
     }
   ];
 
@@ -61,7 +75,7 @@ export default function ImageGuide() {
             </div>
             <div className="w-full relative h-full rounded-md overflow-hidden">
               <Image
-                src="/assets/dummy-upload.png"
+                src={example.image}
                 alt="placeholder"
                 fill
                 className="object-cover"
@@ -81,7 +95,7 @@ export default function ImageGuide() {
         What not to do
       </div>
       <div className="grid grid-cols-3 gap-3 w-full relative">
-        {examples.map((example, index) => (
+        {badExamples.map((example, index) => (
           <div
             key={index}
             className="relative border border-border h-50 rounded-lg p-2 flex flex-col gap-4  bg-surface"
@@ -100,7 +114,7 @@ export default function ImageGuide() {
             </div>
             <div className="w-full relative h-full rounded-md overflow-hidden">
               <Image
-                src="/assets/dummy-upload.png"
+                src={example.image}
                 alt="placeholder"
                 fill
                 className="object-cover"

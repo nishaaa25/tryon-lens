@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import React, { useMemo, useState } from "react";
-import { womenModels, menModels } from "@/lib/data";
+import React, { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+import { womenModels, menModels, girlModels, boyModels } from "@/lib/data";
 
 type DataModel = (typeof womenModels)[number];
 
@@ -47,8 +48,9 @@ const TAB_CONFIG: { id: TabId; label: string }[] = [
 
 function getModelsForTab(tab: TabId): DataModel[] {
   if (tab === "women") return womenModels;
-  if (tab === "girl") return [];
   if (tab === "men") return menModels;
+  if (tab === "girl") return girlModels;
+  if (tab === "boy") return boyModels;
   return [];
 }
 
@@ -68,6 +70,12 @@ export default function ModelsGallery({
   const [filtersMen, setFiltersMen] = useState<FilterState>(emptyFilters);
   const [filtersBoy, setFiltersBoy] = useState<FilterState>(emptyFilters);
   const [previewModelId, setPreviewModelId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(t);
+  }, []);
 
   const currentModels = useMemo(() => getModelsForTab(activeTab), [activeTab]);
   const currentFilters =
@@ -195,7 +203,7 @@ export default function ModelsGallery({
 
   return (
     <>
-      <div className="flex flex-col h-full relative overflow-hidden gap-[14px]">
+      <div className="flex flex-col h-full relative  gap-[14px]">
         {/* Header */}
         <div className="relative border-b border-gray-100 flex items-center justify-between gap-4">
           <div>
@@ -354,9 +362,11 @@ export default function ModelsGallery({
       </div>
 
       {/* Filters Modal */}
-      {isFiltersOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg mx-4 bg-surface rounded-2xl  border border-border overflow-hidden">
+      {mounted &&
+        isFiltersOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+            <div className="w-full max-w-lg bg-surface rounded-2xl border border-border overflow-hidden my-auto">
             {/* Modal header */}
             <div className="px-4 py-[14px] flex items-center justify-between border-b border-border">
               <h3 className="text-xl leading-[120%] font-semibold text-black-600">
@@ -548,11 +558,13 @@ export default function ModelsGallery({
               </button>
             </div>
           </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
 
       {/* Preview Modal */}
-      {previewModelId &&
+      {mounted &&
+        previewModelId &&
         (() => {
           const previewModel = [...womenModels, ...menModels].find(
             (m) => m.id === previewModelId,
@@ -561,9 +573,9 @@ export default function ModelsGallery({
           const previewImages = previewModel
             ? [previewModel.frontImage, ...poses.slice(0, 2)]
             : [];
-          return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-              <div className="w-full max-w-5xl mx-4 bg-surface rounded-2xl border border-border overflow-hidden">
+          return createPortal(
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+              <div className="w-full max-w-5xl bg-surface rounded-2xl border border-border overflow-hidden my-auto">
                 <div className="flex items-center justify-between p-4 border-b border-border">
                   <h3 className="text-lg font-semibold text-gray-900">
                     {previewModel ? formatLabel(previewModel) : "Model"} Preview
@@ -600,7 +612,8 @@ export default function ModelsGallery({
                   </div>
                 </div>
               </div>
-            </div>
+            </div>,
+            document.body,
           );
         })()}
     </>
