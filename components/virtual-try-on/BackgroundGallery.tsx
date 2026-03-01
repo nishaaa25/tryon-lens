@@ -24,10 +24,8 @@ export default function BackgroundGallery({ selectedBackgroundIds, setSelectedBa
 
   const toggleSelection = (id: number) => {
     setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else if (next.size < 4) next.add(id);
-      return next;
+      if (prev.has(id)) return new Set<number>();
+      return new Set([id]);
     });
   };
 
@@ -48,7 +46,7 @@ export default function BackgroundGallery({ selectedBackgroundIds, setSelectedBa
             Background Gallery
           </h2>
           <p className="text-sm leading-[140%] font-medium text-gray-600">
-            Select up to 4 backgrounds
+            Select one background
           </p>
         </div>
       </div>
@@ -99,9 +97,8 @@ export default function BackgroundGallery({ selectedBackgroundIds, setSelectedBa
                 tabIndex={0}
                 onClick={() => toggleSelection(bg.id)}
                 onKeyDown={(e) => e.key === "Enter" && toggleSelection(bg.id)}
-                className={`rounded-xl border overflow-hidden flex flex-col transition-all cursor-pointer ${
-                  isSelected ? "border-orange-300 bg-surface-tint" : "border-border bg-surface hover:shadow-md"
-                }`}
+                className={`rounded-xl border overflow-hidden flex flex-col transition-all cursor-pointer ${isSelected ? "border-orange-300 bg-surface-tint" : "border-border bg-surface hover:shadow-md"
+                  }`}
               >
                 <div
                   className={`px-4 py-3.5 flex items-center justify-between border-b ${isSelected ? "border-orange-300" : "border-border"}`}

@@ -30,7 +30,7 @@ export default function ImageGuide() {
     {
       label: "Cluttered ",
       good: false,
-      image: "/assets/Images/Not to image 2.png",
+      image: "/assets/Images/Not to image 3.png",
     },
     {
       label: "Obstructed",

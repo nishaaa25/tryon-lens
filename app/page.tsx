@@ -8,12 +8,13 @@ import PosesGallery from "@/components/virtual-try-on/PosesGallery";
 import ProgressStepper from "@/components/virtual-try-on/ProgressStepper";
 import Summary from "@/components/virtual-try-on/Summary";
 import UploadSection from "@/components/virtual-try-on/UploadSection";
-import { womenModels, menModels } from "@/lib/data";
+import { womenModels, menModels, girlModels, boyModels } from "@/lib/data";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function HomePage() {
   const [activeStep, setActiveStep] = useState(1);
+  const [customModels, setCustomModels] = useState<any[]>([]);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [topBackUrl, setTopBackUrl] = useState<string | null>(null);
   const [bottomFrontUrl, setBottomFrontUrl] = useState<string | null>(null);
@@ -60,7 +61,7 @@ export default function HomePage() {
     fullBodyBackUrlRef.current = fullBodyBackUrl;
   }, [fullBodyBackUrl]);
 
-  const allModels = useMemo(() => [...womenModels, ...menModels], []);
+  const allModels = useMemo(() => [...womenModels, ...menModels, ...girlModels, ...boyModels, ...customModels], [customModels]);
   const selectedModels = useMemo(
     () =>
       Array.from(selectedModelIds)
@@ -138,137 +139,140 @@ export default function HomePage() {
         <div className="relative z-10 w-full min-w-0 flex flex-col flex-1 min-h-0 gap-3 sm:gap-4 overflow-hidden">
           <div className="shrink-0">
             <ProgressStepper
-            activeStep={activeStep}
-            onStepChange={handleStepChange}
-            completedSteps={{
-              1: hasStepOneSelection,
-              2: hasStepTwoSelection,
-              3: hasStepThreeSelection,
-              4: hasStepFourSelection,
-              5: activeStep === 5,
-            }}
-          />
+              activeStep={activeStep}
+              onStepChange={handleStepChange}
+              completedSteps={{
+                1: hasStepOneSelection,
+                2: hasStepTwoSelection,
+                3: hasStepThreeSelection,
+                4: hasStepFourSelection,
+                5: activeStep === 5,
+              }}
+            />
           </div>
           <div className="relative w-full flex-1 min-h-0 flex flex-col lg:flex-row gap-3 sm:gap-4 overflow-hidden">
-          <div
-            className={`${showStepOneForm || activeStep >= 2 ? "w-full" : "w-full lg:w-7/12"} min-h-0 flex-1 bg-linear-to-br from-surface to-surface-tint z-50 rounded-2xl border border-border relative overflow-hidden`}
-          >
-            <div className="absolute inset-0 h-full w-full z-50 rounded-2xl content-card-grid opacity-60" />
-            <div className="absolute z-40 w-full h-full backdrop-blur-[30px] rounded-2xl overflow-hidden"></div>
-            <Image
-              src="/assets/orange.svg"
-              alt="orange decoration"
-              width={520}
-              height={420}
-              className="absolute top-0 left-0 z-10 "
-            />
-            <Image
-              src="/assets/pink.svg"
-              alt="pink decoration"
-              width={500}
-              height={420}
-              className="absolute top-10 right-10 z-10 "
-            />
-            <Image
-              src="/assets/green.svg"
-              alt="green decoration"
-              width={400}
-              height={420}
-              className="absolute bottom-0 right-0 z-10 "
-            />
-            <Image
-              src="/assets/purple.svg"
-              alt="purple decoration"
-              width={420}
-              height={300}
-              className="absolute bottom-0 left-0 z-10 "
-            />
             <div
-              className={`${activeStep === 1 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 overflow-y-auto`}
+              className={`${showStepOneForm || activeStep >= 2 ? "w-full" : "w-full lg:w-7/12"} min-h-0 flex-1 bg-linear-to-br from-surface to-surface-tint z-50 rounded-2xl border border-border relative overflow-hidden`}
             >
-              <div className={`${showStepOneForm ? "hidden" : "block"}`}>
-                <UploadSection
-                  productType={productType}
-                  setProductType={setProductTypeAndClearPoses}
-                  onImageUpload={handleUploadSectionImage}
-                />
-              </div>
-              <div className={`${showStepOneForm ? "block" : "hidden"}`}>
-                <StepOneForm
-                  productType={productType}
-                  setProductType={setProductTypeAndClearPoses}
-                  uploadedImageUrl={uploadedImageUrl}
-                  setUploadedImageUrl={setUploadedImageUrl}
-                  topBackUrl={topBackUrl}
-                  setTopBackUrl={setTopBackUrl}
-                  bottomFrontUrl={bottomFrontUrl}
-                  setBottomFrontUrl={setBottomFrontUrl}
-                  bottomBackUrl={bottomBackUrl}
-                  setBottomBackUrl={setBottomBackUrl}
-                  fullBodyFrontUrl={fullBodyFrontUrl}
-                  setFullBodyFrontUrl={setFullBodyFrontUrl}
-                  fullBodyBackUrl={fullBodyBackUrl}
-                  setFullBodyBackUrl={setFullBodyBackUrl}
-                />
-              </div>
-            </div>
-            <div
-              className={`${activeStep === 2 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 pb-0 overflow-y-auto`}
-            >
-              <ModelsGallery
-                selectedModelIds={selectedModelIds}
-                setSelectedModelIds={setSelectedModelIds}
+              <div className="absolute inset-0 h-full w-full z-50 rounded-2xl content-card-grid opacity-60" />
+              <div className="absolute z-40 w-full h-full backdrop-blur-[30px] rounded-2xl overflow-hidden"></div>
+              <Image
+                src="/assets/orange.svg"
+                alt="orange decoration"
+                width={520}
+                height={420}
+                className="absolute top-0 left-0 z-10 "
               />
-            </div>
-            {/* Customize Models step commented out for now
+              <Image
+                src="/assets/pink.svg"
+                alt="pink decoration"
+                width={500}
+                height={420}
+                className="absolute top-10 right-10 z-10 "
+              />
+              <Image
+                src="/assets/green.svg"
+                alt="green decoration"
+                width={400}
+                height={420}
+                className="absolute bottom-0 right-0 z-10 "
+              />
+              <Image
+                src="/assets/purple.svg"
+                alt="purple decoration"
+                width={420}
+                height={300}
+                className="absolute bottom-0 left-0 z-10 "
+              />
+              <div
+                className={`${activeStep === 1 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 overflow-y-auto`}
+              >
+                <div className={`${showStepOneForm ? "hidden" : "block"}`}>
+                  <UploadSection
+                    productType={productType}
+                    setProductType={setProductTypeAndClearPoses}
+                    onImageUpload={handleUploadSectionImage}
+                  />
+                </div>
+                <div className={`${showStepOneForm ? "block" : "hidden"}`}>
+                  <StepOneForm
+                    productType={productType}
+                    setProductType={setProductTypeAndClearPoses}
+                    uploadedImageUrl={uploadedImageUrl}
+                    setUploadedImageUrl={setUploadedImageUrl}
+                    topBackUrl={topBackUrl}
+                    setTopBackUrl={setTopBackUrl}
+                    bottomFrontUrl={bottomFrontUrl}
+                    setBottomFrontUrl={setBottomFrontUrl}
+                    bottomBackUrl={bottomBackUrl}
+                    setBottomBackUrl={setBottomBackUrl}
+                    fullBodyFrontUrl={fullBodyFrontUrl}
+                    setFullBodyFrontUrl={setFullBodyFrontUrl}
+                    fullBodyBackUrl={fullBodyBackUrl}
+                    setFullBodyBackUrl={setFullBodyBackUrl}
+                  />
+                </div>
+              </div>
+              <div
+                className={`${activeStep === 2 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 pb-0 overflow-y-auto`}
+              >
+                <ModelsGallery
+                  selectedModelIds={selectedModelIds}
+                  setSelectedModelIds={setSelectedModelIds}
+                  customModels={customModels}
+                  setCustomModels={setCustomModels}
+                  productType={productType}
+                />
+              </div>
+              {/* Customize Models step commented out for now
             <div
               className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
             >
               <CustomizeModels />
             </div>
             */}
-            <div
-              className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 pb-0 overflow-y-auto`}
-            >
-              <PosesGallery
-                productType={productType}
-                selectedModels={selectedModels}
-                selectedPoseKeys={selectedPoseKeys}
-                setSelectedPoseKeys={setSelectedPoseKeys}
-              />
+              <div
+                className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 pb-0 overflow-y-auto`}
+              >
+                <PosesGallery
+                  productType={productType}
+                  selectedModels={selectedModels}
+                  selectedPoseKeys={selectedPoseKeys}
+                  setSelectedPoseKeys={setSelectedPoseKeys}
+                />
+              </div>
+              <div
+                className={`${activeStep === 4 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 pb-0 overflow-y-auto`}
+              >
+                <BackgroundGallery
+                  selectedBackgroundIds={selectedBackgroundIds}
+                  setSelectedBackgroundIds={setSelectedBackgroundIds}
+                />
+              </div>
+              <div
+                className={`${activeStep === 5 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 overflow-y-auto`}
+              >
+                <Summary
+                  productType={productType}
+                  productImages={{
+                    topFront: uploadedImageUrl,
+                    topBack: topBackUrl,
+                    bottomFront: bottomFrontUrl,
+                    bottomBack: bottomBackUrl,
+                    fullBodyFront: fullBodyFrontUrl,
+                    fullBodyBack: fullBodyBackUrl,
+                  }}
+                  selectedModels={selectedModels}
+                  selectedPoseKeys={selectedPoseKeys}
+                  selectedBackgroundIds={selectedBackgroundIds}
+                  projectName={projectName}
+                  onProjectNameChange={setProjectName}
+                  onGoToModelsStep={() => setActiveStep(2)}
+                  onGoToPosesStep={() => setActiveStep(3)}
+                  onGoToBackgroundStep={() => setActiveStep(4)}
+                />
+              </div>
             </div>
-             <div
-              className={`${activeStep === 4 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 pb-0 overflow-y-auto`}
-            >
-              <BackgroundGallery
-              selectedBackgroundIds={selectedBackgroundIds}
-              setSelectedBackgroundIds={setSelectedBackgroundIds}
-            />
-            </div>
-             <div
-              className={`${activeStep === 5 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 overflow-y-auto`}
-            >
-              <Summary
-              productType={productType}
-              productImages={{
-                topFront: uploadedImageUrl,
-                topBack: topBackUrl,
-                bottomFront: bottomFrontUrl,
-                bottomBack: bottomBackUrl,
-                fullBodyFront: fullBodyFrontUrl,
-                fullBodyBack: fullBodyBackUrl,
-              }}
-              selectedModels={selectedModels}
-              selectedPoseKeys={selectedPoseKeys}
-              selectedBackgroundIds={selectedBackgroundIds}
-              projectName={projectName}
-              onProjectNameChange={setProjectName}
-              onGoToModelsStep={() => setActiveStep(2)}
-              onGoToPosesStep={() => setActiveStep(3)}
-              onGoToBackgroundStep={() => setActiveStep(4)}
-            />
-            </div>
-          </div>
             <div
               className={`${showStepOneForm || activeStep >= 2 ? "hidden" : "hidden lg:flex"} lg:w-5/12 h-full relative items-start shrink-0`}
             >
@@ -278,36 +282,36 @@ export default function HomePage() {
           <div
             className={`${showStepOneForm || activeStep >= 2 ? "flex" : "hidden"} relative w-full shrink-0 box-gradient border border-border flex flex-row items-center justify-between p-2 sm:p-4 rounded-2xl gap-2`}
           >
-          <button
-            type="button"
-            onClick={() => setActiveStep((s) => Math.max(1, s - 1))}
-            disabled={activeStep === 1}
-            className="px-2 py-2 sm:px-[14px] sm:py-3 border border-border-muted text-black-600 gap-1.5 sm:gap-2 rounded-md flex justify-center items-center leading-[120%] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors shrink-0"
-          >
-            <Image
-              src="/assets/prev.svg"
-              alt="previous step"
-              width={16}
-              height={16}
-              className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-            />
-            <span>Previous</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveStep((s) => Math.min(5, s + 1))}
-            disabled={activeStep === 5 || !canGoToNextStep}
-            className="px-2 py-2 sm:px-[14px] sm:py-3 bg-black-600 border border-black-600 gap-1.5 sm:gap-2 text-white rounded-md flex justify-center items-center leading-[120%] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors shrink-0"
-          >
-            <span>{activeStep === 5 ? "Generate" : "Next Step"}</span>
-            <Image
-              src="/assets/right-arrow.svg"
-              alt="next step"
-              width={16}
-              height={16}
-              className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-            />
-          </button>
+            <button
+              type="button"
+              onClick={() => setActiveStep((s) => Math.max(1, s - 1))}
+              disabled={activeStep === 1}
+              className="px-2 py-2 sm:px-[14px] sm:py-3 border border-border-muted text-black-600 gap-1.5 sm:gap-2 rounded-md flex justify-center items-center leading-[120%] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors shrink-0"
+            >
+              <Image
+                src="/assets/prev.svg"
+                alt="previous step"
+                width={16}
+                height={16}
+                className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+              />
+              <span>Previous</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveStep((s) => Math.min(5, s + 1))}
+              disabled={activeStep === 5 || !canGoToNextStep}
+              className="px-2 py-2 sm:px-[14px] sm:py-3 bg-black-600 border border-black-600 gap-1.5 sm:gap-2 text-white rounded-md flex justify-center items-center leading-[120%] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors shrink-0"
+            >
+              <span>{activeStep === 5 ? "Generate" : "Next Step"}</span>
+              <Image
+                src="/assets/right-arrow.svg"
+                alt="next step"
+                width={16}
+                height={16}
+                className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+              />
+            </button>
           </div>
         </div>
       </div>

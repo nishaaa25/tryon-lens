@@ -233,8 +233,8 @@ export default function Summary({
                   />
                 </button>
               </div>
-              <div className="grid grid-cols-4 gap-3 relative">
-                {[0, 1, 2, 3].map((idx) => {
+              <div className="grid grid-cols-2 gap-3 relative">
+                {[0].map((idx) => {
                   const poseImageUrl = selectedPoseImageUrls[idx];
                   return (
                     <div

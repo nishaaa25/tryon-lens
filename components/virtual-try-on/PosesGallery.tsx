@@ -29,10 +29,8 @@ export default function PosesGallery({ productType, selectedModels, selectedPose
   const togglePoseSelection = (modelId: string, poseIndex: number) => {
     const key = `${modelId}-${poseIndex}`;
     setSelectedPoseKeys((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else if (next.size < 4) next.add(key);
-      return next;
+      if (prev.has(key)) return new Set<string>();
+      return new Set([key]);
     });
   };
 
@@ -72,7 +70,7 @@ export default function PosesGallery({ productType, selectedModels, selectedPose
           </h2>
         </div>
         <div className="flex items-center gap-2">
-          {[0, 1, 2, 3].map((idx) => {
+          {[0].map((idx) => {
             const poseImageUrl = selectedPosesPreview[idx];
             return (
               <div

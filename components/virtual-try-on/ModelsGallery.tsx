@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { womenModels, menModels, girlModels, boyModels } from "@/lib/data";
+import UploadModelModal from "@/components/virtual-try-on/UploadModelModal";
 
 type DataModel = (typeof womenModels)[number];
 
@@ -57,12 +58,23 @@ function getModelsForTab(tab: TabId): DataModel[] {
 type ModelsGalleryProps = {
   selectedModelIds: Set<string>;
   setSelectedModelIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+  customModels?: DataModel[];
+  setCustomModels?: React.Dispatch<React.SetStateAction<DataModel[]>>;
+  productType?: "Upper body" | "Lower body" | "Full body";
 };
 
 export default function ModelsGallery({
   selectedModelIds,
   setSelectedModelIds,
+  customModels = [],
+  setCustomModels,
+  productType = "Upper body",
 }: ModelsGalleryProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Custom Model Upload Modal State
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+
   const [activeTab, setActiveTab] = useState<TabId>("women");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filtersWomen, setFiltersWomen] = useState<FilterState>(emptyFilters);
@@ -77,7 +89,22 @@ export default function ModelsGallery({
     return () => clearTimeout(t);
   }, []);
 
-  const currentModels = useMemo(() => getModelsForTab(activeTab), [activeTab]);
+  const getModelsForTab = (tabId: TabId) => {
+    const list =
+      tabId === "women"
+        ? womenModels
+        : tabId === "girl"
+          ? girlModels
+          : tabId === "men"
+            ? menModels
+            : boyModels;
+    const custom = customModels.filter(m => String(m.gender).toLowerCase() === tabId);
+    return [...custom, ...list];
+  };
+
+  const currentModels = useMemo(() => {
+    return getModelsForTab(activeTab);
+  }, [activeTab, customModels]);
   const currentFilters =
     activeTab === "women"
       ? filtersWomen
@@ -94,7 +121,7 @@ export default function ModelsGallery({
         : activeTab === "men"
           ? setFiltersMen
           : setFiltersBoy;
-  const allModels = useMemo(() => [...womenModels, ...menModels], []);
+  const allModels = useMemo(() => [...womenModels, ...menModels, ...customModels], [customModels]);
 
   const setActiveTabAndClearOther = (tab: TabId) => {
     if (tab === activeTab) return;
@@ -111,9 +138,9 @@ export default function ModelsGallery({
     const bodyTypes = new Set<string>();
     const ageGroups = new Set<string>();
     currentModels.forEach((m) => {
-      ethnicities.add(String(m.ethnicity));
-      bodyTypes.add(String(m["body-type"]));
-      ageGroups.add(String(m["age-group"]));
+      if (String(m.ethnicity) !== "Custom") ethnicities.add(String(m.ethnicity));
+      if (String(m["body-type"]) !== "Custom") bodyTypes.add(String(m["body-type"]));
+      if (String(m["age-group"]) !== "Custom") ageGroups.add(String(m["age-group"]));
     });
     return {
       ethnicity: Array.from(ethnicities).sort(),
@@ -146,6 +173,40 @@ export default function ModelsGallery({
         .filter(Boolean) as DataModel[],
     [selectedIdsInOrder, allModels],
   );
+
+
+
+  const getFilteredModelsForTab = (tabId: TabId) => {
+    const baseModels = getModelsForTab(tabId);
+    let filters =
+      tabId === "women"
+        ? filtersWomen
+        : tabId === "girl"
+          ? filtersGirl
+          : tabId === "men"
+            ? filtersMen
+            : filtersBoy;
+    return baseModels.filter((m) => {
+      if (filters.ethnicity.length > 0 && !filters.ethnicity.includes(String(m.ethnicity)))
+        return false;
+      if (filters.bodyType.length > 0 && !filters.bodyType.includes(String(m["body-type"])))
+        return false;
+      if (filters.ageGroup.length > 0 && !filters.ageGroup.includes(String(m["age-group"])))
+        return false;
+      return true;
+    });
+  };
+
+  const formatLabel = (val: DataModel) => {
+    let name = val.id;
+    if (name.startsWith("custom-")) return "Custom Model";
+    return name
+      .replace(/^[FM]_/, "")
+      .replace(/_[A-Z]+$/, "")
+      .split("_")
+      .map(capitalize)
+      .join(" ");
+  };
 
   const toggleModelSelection = (modelId: string) => {
     setSelectedModelIds((prev) => {
@@ -201,6 +262,17 @@ export default function ModelsGallery({
     setCurrentFilters(emptyFilters);
   };
 
+  const handleDeleteModel = (e: React.MouseEvent, modelId: string) => {
+    e.stopPropagation();
+    setCustomModels?.((prev) => prev.filter((m) => m.id !== modelId));
+    setSelectedModelIds((prev) => {
+      const next = new Set(prev);
+      next.delete(modelId);
+      return next;
+    });
+    if (previewModelId === modelId) setPreviewModelId(null);
+  };
+
   return (
     <>
       <div className="flex flex-col h-full relative  gap-[14px]">
@@ -246,10 +318,10 @@ export default function ModelsGallery({
                   key={id}
                   type="button"
                   onClick={() => setActiveTabAndClearOther(id)}
-                  className={`min-w-0 flex-1 sm:flex-none py-1.5 rounded-md text-black-600 px-2 sm:px-3 ${activeTab === id ? "border border-surface bg-surface" : ""}`}
+                  className={`min-w-0 flex-1 sm:flex-none py-1.5 rounded-md text-black-600 px-2 sm:px-3 ${activeTab === id ? "border border-surface bg-surface shadow-sm" : "text-gray-500 hover:text-black-600"}`}
                 >
                   {label}
-                  <span className="text-orange-600 font-semibold rounded-full leading-[140%] text-sm ml-1 px-1 bg-surface-tint">
+                  <span className={`font-semibold rounded-full leading-[140%] text-xs ml-1.5 px-1.5 py-0.5 ${activeTab === id ? "bg-orange-100 text-orange-600" : "bg-gray-200 text-gray-600"}`}>
                     {count}
                   </span>
                 </button>
@@ -257,6 +329,20 @@ export default function ModelsGallery({
             })}
           </div>
           <div className="flex items-center gap-2">
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              ref={fileInputRef}
+            />
+            <button
+              type="button"
+              onClick={() => setIsUploadModalOpen(true)}
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-black-600 font-medium bg-black-600 px-3 py-[10px] text-sm leading-[120%] text-white hover:bg-gray-800 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <span className="hidden sm:inline">Upload Model</span>
+            </button>
             <button
               type="button"
               onClick={() => setIsFiltersOpen(true)}
@@ -288,11 +374,10 @@ export default function ModelsGallery({
                   onKeyDown={(e) =>
                     e.key === "Enter" && toggleModelSelection(model.id)
                   }
-                  className={`rounded-xl border overflow-hidden flex flex-col transition-all cursor-pointer ${
-                    isSelected
-                      ? "border-orange-300 bg-surface-tint"
-                      : "border-border bg-surface"
-                  }`}
+                  className={`rounded-xl border overflow-hidden flex flex-col transition-all cursor-pointer ${isSelected
+                    ? "border-orange-300 bg-surface-tint"
+                    : "border-border bg-surface"
+                    }`}
                 >
                   <div
                     className={`px-4 py-3.5 flex items-center justify-between border-b ${isSelected ? "border-orange-300" : "border-border"}`}
@@ -300,13 +385,24 @@ export default function ModelsGallery({
                     <p className="text-sm font-medium text-black-600 leading-[120%]">
                       {label}
                     </p>
-                    <Image
-                      src="/assets/like.svg"
-                      width={16}
-                      height={16}
-                      alt="like icon"
-                      className="hidden"
-                    />
+                    {model.id.startsWith("custom-") ? (
+                      <button
+                        type="button"
+                        onClick={(e) => handleDeleteModel(e, model.id)}
+                        className="text-gray-400 hover:text-red-500 transition-colors pointer-events-auto"
+                        aria-label="Delete custom model"
+                      >
+                        <Image src="/assets/bin.svg" alt="delete" width={16} height={16} />
+                      </button>
+                    ) : (
+                      <Image
+                        src="/assets/like.svg"
+                        width={16}
+                        height={16}
+                        alt="like icon"
+                        className="hidden"
+                      />
+                    )}
                   </div>
                   <div className="relative p-4 flex justify-center items-center">
                     <div
@@ -367,197 +463,197 @@ export default function ModelsGallery({
         createPortal(
           <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
             <div className="w-full max-w-lg bg-surface rounded-2xl border border-border overflow-hidden my-auto">
-            {/* Modal header */}
-            <div className="px-4 py-[14px] flex items-center justify-between border-b border-border">
-              <h3 className="text-xl leading-[120%] font-semibold text-black-600">
-                Filters
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsFiltersOpen(false)}
-                className="relative"
-                aria-label="Close filters"
-              >
-                <Image
-                  src="/assets/cross.svg"
-                  alt="close-btn"
-                  width={24}
-                  height={24}
-                />
-              </button>
-            </div>
-
-            <div className="p-4 max-h-[70vh] flex flex-col gap-6 leading-[120%] overflow-y-auto ">
-              {/* Selected */}
-              <div className="relative flex flex-col gap-3">
-                <p className="text-base font-semibold text-black-600 ">
-                  Selected
-                </p>
-                <div className="flex flex-wrap gap-2 ">
-                  {selectedChips.length === 0 ? (
-                    <span className="text-xs text-gray-500">None</span>
-                  ) : (
-                    selectedChips.map((chip) => (
-                      <button
-                        key={chip}
-                        type="button"
-                        onClick={() => removeChip(chip)}
-                        className="inline-flex items-center gap-2 rounded-full border border-black-600 px-2.5 py-1.5 text-sm font-medium text-black-600"
-                      >
-                        <span>{chip}</span>
-                        <Image
-                          src="/assets/remove.svg"
-                          alt="remove-filter"
-                          width={16}
-                          height={16}
-                        />
-                      </button>
-                    ))
-                  )}
-                </div>
+              {/* Modal header */}
+              <div className="px-4 py-[14px] flex items-center justify-between border-b border-border">
+                <h3 className="text-xl leading-[120%] font-semibold text-black-600">
+                  Filters
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsFiltersOpen(false)}
+                  className="relative"
+                  aria-label="Close filters"
+                >
+                  <Image
+                    src="/assets/cross.svg"
+                    alt="close-btn"
+                    width={24}
+                    height={24}
+                  />
+                </button>
               </div>
 
-              <hr className="h-px w-full relative text-gray-200" />
-
-              {/* Ethnicity – from data */}
-              <div className="relative flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-base font-semibold text-black-600">
-                    Ethnicity
+              <div className="p-4 max-h-[70vh] flex flex-col gap-6 leading-[120%] overflow-y-auto ">
+                {/* Selected */}
+                <div className="relative flex flex-col gap-3">
+                  <p className="text-base font-semibold text-black-600 ">
+                    Selected
                   </p>
-                  <span className="text-gray-500">⌃</span>
+                  <div className="flex flex-wrap gap-2 ">
+                    {selectedChips.length === 0 ? (
+                      <span className="text-xs text-gray-500">None</span>
+                    ) : (
+                      selectedChips.map((chip) => (
+                        <button
+                          key={chip}
+                          type="button"
+                          onClick={() => removeChip(chip)}
+                          className="inline-flex items-center gap-2 rounded-full border border-black-600 px-2.5 py-1.5 text-sm font-medium text-black-600"
+                        >
+                          <span>{chip}</span>
+                          <Image
+                            src="/assets/remove.svg"
+                            alt="remove-filter"
+                            width={16}
+                            height={16}
+                          />
+                        </button>
+                      ))
+                    )}
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
-                  {filterOptions.ethnicity.map((value) => (
-                    <label key={value} className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={currentFilters.ethnicity.includes(value)}
-                        onChange={() =>
-                          toggleInList(
-                            value,
-                            currentFilters.ethnicity,
-                            (next) =>
+
+                <hr className="h-px w-full relative text-gray-200" />
+
+                {/* Ethnicity – from data */}
+                <div className="relative flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-base font-semibold text-black-600">
+                      Ethnicity
+                    </p>
+                    <span className="text-gray-500">⌃</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
+                    {filterOptions.ethnicity.map((value) => (
+                      <label key={value} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={currentFilters.ethnicity.includes(value)}
+                          onChange={() =>
+                            toggleInList(
+                              value,
+                              currentFilters.ethnicity,
+                              (next) =>
+                                setCurrentFilters({
+                                  ...currentFilters,
+                                  ethnicity: next,
+                                }),
+                            )
+                          }
+                          className="h-5 w-5 accent-orange-500"
+                        />
+                        <span
+                          className={
+                            currentFilters.ethnicity.includes(value)
+                              ? "text-black-600 font-medium"
+                              : "text-gray-600 font-normal"
+                          }
+                        >
+                          {capitalize(value)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <hr className="h-px w-full relative text-gray-200" />
+
+                {/* Body type – from data */}
+                <div className="relative flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-base font-semibold text-black-600">
+                      Body type
+                    </p>
+                    <span className="text-gray-500">⌃</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
+                    {filterOptions.bodyType.map((value) => (
+                      <label key={value} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={currentFilters.bodyType.includes(value)}
+                          onChange={() =>
+                            toggleInList(value, currentFilters.bodyType, (next) =>
                               setCurrentFilters({
                                 ...currentFilters,
-                                ethnicity: next,
+                                bodyType: next,
                               }),
-                          )
-                        }
-                        className="h-5 w-5 accent-orange-500"
-                      />
-                      <span
-                        className={
-                          currentFilters.ethnicity.includes(value)
-                            ? "text-black-600 font-medium"
-                            : "text-gray-600 font-normal"
-                        }
-                      >
-                        {capitalize(value)}
-                      </span>
-                    </label>
-                  ))}
+                            )
+                          }
+                          className="h-5 w-5 accent-orange-500"
+                        />
+                        <span
+                          className={
+                            currentFilters.bodyType.includes(value)
+                              ? "text-black-600 font-medium"
+                              : "text-gray-600 font-normal"
+                          }
+                        >
+                          {capitalize(value)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <hr className="h-px w-full relative text-gray-200" />
+
+                {/* Age – from data */}
+                <div className="relative flex flex-col gap-3 pb-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-base font-semibold text-black-600">Age</p>
+                    <span className="text-gray-500">⌃</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
+                    {filterOptions.ageGroup.map((value) => (
+                      <label key={value} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={currentFilters.ageGroup.includes(value)}
+                          onChange={() =>
+                            toggleInList(value, currentFilters.ageGroup, (next) =>
+                              setCurrentFilters({
+                                ...currentFilters,
+                                ageGroup: next,
+                              }),
+                            )
+                          }
+                          className="h-5 w-5 accent-orange-500"
+                        />
+                        <span
+                          className={
+                            currentFilters.ageGroup.includes(value)
+                              ? "text-black-600 font-medium"
+                              : "text-gray-600 font-normal"
+                          }
+                        >
+                          {formatAgeGroup(value)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <hr className="h-px w-full relative text-gray-200" />
-
-              {/* Body type – from data */}
-              <div className="relative flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-base font-semibold text-black-600">
-                    Body type
-                  </p>
-                  <span className="text-gray-500">⌃</span>
-                </div>
-                <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
-                  {filterOptions.bodyType.map((value) => (
-                    <label key={value} className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={currentFilters.bodyType.includes(value)}
-                        onChange={() =>
-                          toggleInList(value, currentFilters.bodyType, (next) =>
-                            setCurrentFilters({
-                              ...currentFilters,
-                              bodyType: next,
-                            }),
-                          )
-                        }
-                        className="h-5 w-5 accent-orange-500"
-                      />
-                      <span
-                        className={
-                          currentFilters.bodyType.includes(value)
-                            ? "text-black-600 font-medium"
-                            : "text-gray-600 font-normal"
-                        }
-                      >
-                        {capitalize(value)}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <hr className="h-px w-full relative text-gray-200" />
-
-              {/* Age – from data */}
-              <div className="relative flex flex-col gap-3 pb-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-base font-semibold text-black-600">Age</p>
-                  <span className="text-gray-500">⌃</span>
-                </div>
-                <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
-                  {filterOptions.ageGroup.map((value) => (
-                    <label key={value} className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={currentFilters.ageGroup.includes(value)}
-                        onChange={() =>
-                          toggleInList(value, currentFilters.ageGroup, (next) =>
-                            setCurrentFilters({
-                              ...currentFilters,
-                              ageGroup: next,
-                            }),
-                          )
-                        }
-                        className="h-5 w-5 accent-orange-500"
-                      />
-                      <span
-                        className={
-                          currentFilters.ageGroup.includes(value)
-                            ? "text-black-600 font-medium"
-                            : "text-gray-600 font-normal"
-                        }
-                      >
-                        {formatAgeGroup(value)}
-                      </span>
-                    </label>
-                  ))}
-                </div>
+              {/* Modal footer */}
+              <div className="px-6 py-3 border-t border-border flex items-center justify-between bg-surface relative">
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="inline-flex items-center rounded-lg border border-gray-300 bg-surface px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
+                >
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsFiltersOpen(false)}
+                  className="inline-flex items-center rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white hover:bg-gray-900"
+                >
+                  Show {filteredModels.length} Model
+                  {filteredModels.length !== 1 ? "s" : ""}
+                </button>
               </div>
             </div>
-
-            {/* Modal footer */}
-            <div className="px-6 py-3 border-t border-border flex items-center justify-between bg-surface relative">
-              <button
-                type="button"
-                onClick={resetFilters}
-                className="inline-flex items-center rounded-lg border border-gray-300 bg-surface px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
-              >
-                Reset
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsFiltersOpen(false)}
-                className="inline-flex items-center rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white hover:bg-gray-900"
-              >
-                Show {filteredModels.length} Model
-                {filteredModels.length !== 1 ? "s" : ""}
-              </button>
-            </div>
-          </div>
           </div>,
           document.body,
         )}
@@ -578,7 +674,7 @@ export default function ModelsGallery({
               <div className="w-full max-w-5xl bg-surface rounded-2xl border border-border overflow-hidden my-auto">
                 <div className="flex items-center justify-between p-4 border-b border-border">
                   <h3 className="text-lg font-semibold text-gray-900">
-                    {previewModel ? formatLabel(previewModel) : "Model"} Preview
+                    {previewModel ? (previewModel.id.startsWith("custom-") ? "Custom Model" : previewModel.id) : "Model"} Preview
                   </h3>
                   <button
                     type="button"
@@ -616,6 +712,16 @@ export default function ModelsGallery({
             document.body,
           );
         })()}
+      {/* Upload Custom Model Modal */}
+      <UploadModelModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        activeTab={activeTab}
+        productType={productType}
+        filterOptions={filterOptions}
+        setCustomModels={setCustomModels}
+        setSelectedModelIds={setSelectedModelIds}
+      />
     </>
   );
 }
