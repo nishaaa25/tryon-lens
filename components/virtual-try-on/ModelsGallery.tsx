@@ -3,6 +3,7 @@
 import Image from "next/image";
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { womenModels, menModels, girlModels, boyModels } from "@/lib/data";
 import UploadModelModal from "@/components/virtual-try-on/UploadModelModal";
 
@@ -459,259 +460,288 @@ export default function ModelsGallery({
 
       {/* Filters Modal */}
       {mounted &&
-        isFiltersOpen &&
         createPortal(
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-            <div className="w-full max-w-lg bg-surface rounded-2xl border border-border overflow-hidden my-auto">
-              {/* Modal header */}
-              <div className="px-4 py-[14px] flex items-center justify-between border-b border-border">
-                <h3 className="text-xl leading-[120%] font-semibold text-black-600">
-                  Filters
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setIsFiltersOpen(false)}
-                  className="relative"
-                  aria-label="Close filters"
+          <AnimatePresence>
+            {isFiltersOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto"
+              >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                  transition={{ duration: 0.3, type: "spring", bounce: 0.2 }}
+                  className="w-full max-w-lg bg-surface rounded-2xl border border-border overflow-hidden my-auto"
                 >
-                  <Image
-                    src="/assets/cross.svg"
-                    alt="close-btn"
-                    width={24}
-                    height={24}
-                  />
-                </button>
-              </div>
-
-              <div className="p-4 max-h-[70vh] flex flex-col gap-6 leading-[120%] overflow-y-auto ">
-                {/* Selected */}
-                <div className="relative flex flex-col gap-3">
-                  <p className="text-base font-semibold text-black-600 ">
-                    Selected
-                  </p>
-                  <div className="flex flex-wrap gap-2 ">
-                    {selectedChips.length === 0 ? (
-                      <span className="text-xs text-gray-500">None</span>
-                    ) : (
-                      selectedChips.map((chip) => (
-                        <button
-                          key={chip}
-                          type="button"
-                          onClick={() => removeChip(chip)}
-                          className="inline-flex items-center gap-2 rounded-full border border-black-600 px-2.5 py-1.5 text-sm font-medium text-black-600"
-                        >
-                          <span>{chip}</span>
-                          <Image
-                            src="/assets/remove.svg"
-                            alt="remove-filter"
-                            width={16}
-                            height={16}
-                          />
-                        </button>
-                      ))
-                    )}
+                  {/* Modal header */}
+                  <div className="px-4 py-[14px] flex items-center justify-between border-b border-border">
+                    <h3 className="text-xl leading-[120%] font-semibold text-black-600">
+                      Filters
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setIsFiltersOpen(false)}
+                      className="relative"
+                      aria-label="Close filters"
+                    >
+                      <Image
+                        src="/assets/cross.svg"
+                        alt="close-btn"
+                        width={24}
+                        height={24}
+                      />
+                    </button>
                   </div>
-                </div>
 
-                <hr className="h-px w-full relative text-gray-200" />
+                  <div className="p-4 max-h-[70vh] flex flex-col gap-6 leading-[120%] overflow-y-auto ">
+                    {/* Selected */}
+                    <div className="relative flex flex-col gap-3">
+                      <p className="text-base font-semibold text-black-600 ">
+                        Selected
+                      </p>
+                      <div className="flex flex-wrap gap-2 ">
+                        {selectedChips.length === 0 ? (
+                          <span className="text-xs text-gray-500">None</span>
+                        ) : (
+                          selectedChips.map((chip) => (
+                            <button
+                              key={chip}
+                              type="button"
+                              onClick={() => removeChip(chip)}
+                              className="inline-flex items-center gap-2 rounded-full border border-black-600 px-2.5 py-1.5 text-sm font-medium text-black-600"
+                            >
+                              <span>{chip}</span>
+                              <Image
+                                src="/assets/remove.svg"
+                                alt="remove-filter"
+                                width={16}
+                                height={16}
+                              />
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
 
-                {/* Ethnicity – from data */}
-                <div className="relative flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-base font-semibold text-black-600">
-                      Ethnicity
-                    </p>
-                    <span className="text-gray-500">⌃</span>
+                    <hr className="h-px w-full relative text-gray-200" />
+
+                    {/* Ethnicity – from data */}
+                    <div className="relative flex flex-col gap-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-base font-semibold text-black-600">
+                          Ethnicity
+                        </p>
+                        <span className="text-gray-500">⌃</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
+                        {filterOptions.ethnicity.map((value) => (
+                          <label key={value} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={currentFilters.ethnicity.includes(value)}
+                              onChange={() =>
+                                toggleInList(
+                                  value,
+                                  currentFilters.ethnicity,
+                                  (next) =>
+                                    setCurrentFilters({
+                                      ...currentFilters,
+                                      ethnicity: next,
+                                    }),
+                                )
+                              }
+                              className="h-5 w-5 accent-orange-500"
+                            />
+                            <span
+                              className={
+                                currentFilters.ethnicity.includes(value)
+                                  ? "text-black-600 font-medium"
+                                  : "text-gray-600 font-normal"
+                              }
+                            >
+                              {capitalize(value)}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <hr className="h-px w-full relative text-gray-200" />
+
+                    {/* Body type – from data */}
+                    <div className="relative flex flex-col gap-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-base font-semibold text-black-600">
+                          Body type
+                        </p>
+                        <span className="text-gray-500">⌃</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
+                        {filterOptions.bodyType.map((value) => (
+                          <label key={value} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={currentFilters.bodyType.includes(value)}
+                              onChange={() =>
+                                toggleInList(value, currentFilters.bodyType, (next) =>
+                                  setCurrentFilters({
+                                    ...currentFilters,
+                                    bodyType: next,
+                                  }),
+                                )
+                              }
+                              className="h-5 w-5 accent-orange-500"
+                            />
+                            <span
+                              className={
+                                currentFilters.bodyType.includes(value)
+                                  ? "text-black-600 font-medium"
+                                  : "text-gray-600 font-normal"
+                              }
+                            >
+                              {capitalize(value)}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    <hr className="h-px w-full relative text-gray-200" />
+
+                    {/* Age – from data */}
+                    <div className="relative flex flex-col gap-3 pb-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-base font-semibold text-black-600">Age</p>
+                        <span className="text-gray-500">⌃</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
+                        {filterOptions.ageGroup.map((value) => (
+                          <label key={value} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={currentFilters.ageGroup.includes(value)}
+                              onChange={() =>
+                                toggleInList(value, currentFilters.ageGroup, (next) =>
+                                  setCurrentFilters({
+                                    ...currentFilters,
+                                    ageGroup: next,
+                                  }),
+                                )
+                              }
+                              className="h-5 w-5 accent-orange-500"
+                            />
+                            <span
+                              className={
+                                currentFilters.ageGroup.includes(value)
+                                  ? "text-black-600 font-medium"
+                                  : "text-gray-600 font-normal"
+                              }
+                            >
+                              {formatAgeGroup(value)}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
-                    {filterOptions.ethnicity.map((value) => (
-                      <label key={value} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={currentFilters.ethnicity.includes(value)}
-                          onChange={() =>
-                            toggleInList(
-                              value,
-                              currentFilters.ethnicity,
-                              (next) =>
-                                setCurrentFilters({
-                                  ...currentFilters,
-                                  ethnicity: next,
-                                }),
-                            )
-                          }
-                          className="h-5 w-5 accent-orange-500"
-                        />
-                        <span
-                          className={
-                            currentFilters.ethnicity.includes(value)
-                              ? "text-black-600 font-medium"
-                              : "text-gray-600 font-normal"
-                          }
-                        >
-                          {capitalize(value)}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
 
-                <hr className="h-px w-full relative text-gray-200" />
-
-                {/* Body type – from data */}
-                <div className="relative flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-base font-semibold text-black-600">
-                      Body type
-                    </p>
-                    <span className="text-gray-500">⌃</span>
+                  {/* Modal footer */}
+                  <div className="px-6 py-3 border-t border-border flex items-center justify-between bg-surface relative">
+                    <button
+                      type="button"
+                      onClick={resetFilters}
+                      className="inline-flex items-center rounded-lg border border-gray-300 bg-surface px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
+                    >
+                      Reset
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsFiltersOpen(false)}
+                      className="inline-flex items-center rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white hover:bg-gray-900"
+                    >
+                      Show {filteredModels.length} Model{filteredModels.length !== 1 ? "s" : ""}
+                    </button>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
-                    {filterOptions.bodyType.map((value) => (
-                      <label key={value} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={currentFilters.bodyType.includes(value)}
-                          onChange={() =>
-                            toggleInList(value, currentFilters.bodyType, (next) =>
-                              setCurrentFilters({
-                                ...currentFilters,
-                                bodyType: next,
-                              }),
-                            )
-                          }
-                          className="h-5 w-5 accent-orange-500"
-                        />
-                        <span
-                          className={
-                            currentFilters.bodyType.includes(value)
-                              ? "text-black-600 font-medium"
-                              : "text-gray-600 font-normal"
-                          }
-                        >
-                          {capitalize(value)}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <hr className="h-px w-full relative text-gray-200" />
-
-                {/* Age – from data */}
-                <div className="relative flex flex-col gap-3 pb-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-base font-semibold text-black-600">Age</p>
-                    <span className="text-gray-500">⌃</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 text-sm leading-[120%]">
-                    {filterOptions.ageGroup.map((value) => (
-                      <label key={value} className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={currentFilters.ageGroup.includes(value)}
-                          onChange={() =>
-                            toggleInList(value, currentFilters.ageGroup, (next) =>
-                              setCurrentFilters({
-                                ...currentFilters,
-                                ageGroup: next,
-                              }),
-                            )
-                          }
-                          className="h-5 w-5 accent-orange-500"
-                        />
-                        <span
-                          className={
-                            currentFilters.ageGroup.includes(value)
-                              ? "text-black-600 font-medium"
-                              : "text-gray-600 font-normal"
-                          }
-                        >
-                          {formatAgeGroup(value)}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Modal footer */}
-              <div className="px-6 py-3 border-t border-border flex items-center justify-between bg-surface relative">
-                <button
-                  type="button"
-                  onClick={resetFilters}
-                  className="inline-flex items-center rounded-lg border border-gray-300 bg-surface px-4 py-2 text-sm text-gray-800 hover:bg-gray-50"
-                >
-                  Reset
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsFiltersOpen(false)}
-                  className="inline-flex items-center rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white hover:bg-gray-900"
-                >
-                  Show {filteredModels.length} Model
-                  {filteredModels.length !== 1 ? "s" : ""}
-                </button>
-              </div>
-            </div>
-          </div>,
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
           document.body,
         )}
 
       {/* Preview Modal */}
       {mounted &&
-        previewModelId &&
-        (() => {
-          const previewModel = [...womenModels, ...menModels].find(
-            (m) => m.id === previewModelId,
-          );
-          const poses = previewModel?.modelPoses?.map((p) => p.imageUrl) ?? [];
-          const previewImages = previewModel
-            ? [previewModel.frontImage, ...poses.slice(0, 2)]
-            : [];
-          return createPortal(
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-              <div className="w-full max-w-5xl bg-surface rounded-2xl border border-border overflow-hidden my-auto">
-                <div className="flex items-center justify-between p-4 border-b border-border">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {previewModel ? (previewModel.id.startsWith("custom-") ? "Custom Model" : previewModel.id) : "Model"} Preview
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => setPreviewModelId(null)}
-                    className="flex items-center justify-center relative cursor-pointer"
-                    aria-label="Close preview"
+        createPortal(
+          <AnimatePresence>
+            {previewModelId && (() => {
+              const previewModel = [...womenModels, ...menModels].find(
+                (m) => m.id === previewModelId,
+              );
+              const poses = previewModel?.modelPoses?.map((p) => p.imageUrl) ?? [];
+              const previewImages = previewModel
+                ? [previewModel.frontImage, ...poses.slice(0, 2)]
+                : [];
+              return (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                    transition={{ duration: 0.3, type: "spring", bounce: 0.2 }}
+                    className="w-full max-w-5xl bg-surface rounded-2xl border border-border overflow-hidden my-auto"
                   >
-                    <Image
-                      src="/assets/cross.svg"
-                      alt="close icon"
-                      width={24}
-                      height={24}
-                    />
-                  </button>
-                </div>
-                <div className="p-4 relative">
-                  <div className="grid relative grid-cols-1 md:grid-cols-3 gap-4">
-                    {previewImages.map((src, idx) => (
-                      <div
-                        key={idx}
-                        className="aspect-[2/3] relative bg-gray-50 rounded-xl overflow-hidden"
+                    <div className="flex items-center justify-between p-4 border-b border-border">
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {previewModel ? (previewModel.id.startsWith("custom-") ? "Custom Model" : previewModel.id) : "Model"} Preview
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => setPreviewModelId(null)}
+                        className="flex items-center justify-center relative cursor-pointer"
+                        aria-label="Close preview"
                       >
                         <Image
-                          src={src}
-                          alt="Model preview"
-                          className="w-full h-full object-cover rounded-lg"
-                          fill
+                          src="/assets/cross.svg"
+                          alt="close icon"
+                          width={24}
+                          height={24}
                         />
+                      </button>
+                    </div>
+                    <div className="p-4 relative">
+                      <div className="grid relative grid-cols-1 md:grid-cols-3 gap-4">
+                        {previewImages.map((src, idx) => (
+                          <div
+                            key={idx}
+                            className="aspect-[2/3] relative bg-gray-50 rounded-xl overflow-hidden"
+                          >
+                            <Image
+                              src={src}
+                              alt="Model preview"
+                              className="w-full h-full object-cover rounded-lg"
+                              fill
+                            />
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>,
-            document.body,
-          );
-        })()}
+                    </div>
+                  </motion.div>
+                </motion.div>
+              );
+            })()}
+          </AnimatePresence>,
+          document.body,
+        )}
       {/* Upload Custom Model Modal */}
       <UploadModelModal
         isOpen={isUploadModalOpen}

@@ -11,9 +11,11 @@ import UploadSection from "@/components/virtual-try-on/UploadSection";
 import { womenModels, menModels, girlModels, boyModels } from "@/lib/data";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function HomePage() {
   const [activeStep, setActiveStep] = useState(1);
+  const [direction, setDirection] = useState(1);
   const [customModels, setCustomModels] = useState<any[]>([]);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
   const [topBackUrl, setTopBackUrl] = useState<string | null>(null);
@@ -122,7 +124,10 @@ export default function HomePage() {
   }, []);
 
   const handleStepChange = (step: number) => {
-    if (step <= maxReachableStep) setActiveStep(step);
+    if (step <= maxReachableStep) {
+      setDirection(step > activeStep ? 1 : -1);
+      setActiveStep(step);
+    }
   };
 
   const handleUploadSectionImage = (url: string) => {
@@ -184,94 +189,113 @@ export default function HomePage() {
                 height={300}
                 className="absolute bottom-0 left-0 z-10 "
               />
-              <div
-                className={`${activeStep === 1 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 overflow-y-auto`}
-              >
-                <div className={`${showStepOneForm ? "hidden" : "block"}`}>
-                  <UploadSection
-                    productType={productType}
-                    setProductType={setProductTypeAndClearPoses}
-                    onImageUpload={handleUploadSectionImage}
-                  />
-                </div>
-                <div className={`${showStepOneForm ? "block" : "hidden"}`}>
-                  <StepOneForm
-                    productType={productType}
-                    setProductType={setProductTypeAndClearPoses}
-                    uploadedImageUrl={uploadedImageUrl}
-                    setUploadedImageUrl={setUploadedImageUrl}
-                    topBackUrl={topBackUrl}
-                    setTopBackUrl={setTopBackUrl}
-                    bottomFrontUrl={bottomFrontUrl}
-                    setBottomFrontUrl={setBottomFrontUrl}
-                    bottomBackUrl={bottomBackUrl}
-                    setBottomBackUrl={setBottomBackUrl}
-                    fullBodyFrontUrl={fullBodyFrontUrl}
-                    setFullBodyFrontUrl={setFullBodyFrontUrl}
-                    fullBodyBackUrl={fullBodyBackUrl}
-                    setFullBodyBackUrl={setFullBodyBackUrl}
-                  />
-                </div>
-              </div>
-              <div
-                className={`${activeStep === 2 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 pb-0 overflow-y-auto`}
-              >
-                <ModelsGallery
-                  selectedModelIds={selectedModelIds}
-                  setSelectedModelIds={setSelectedModelIds}
-                  customModels={customModels}
-                  setCustomModels={setCustomModels}
-                  productType={productType}
-                />
-              </div>
-              {/* Customize Models step commented out for now
-            <div
-              className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-6 pb-0`}
-            >
-              <CustomizeModels />
-            </div>
-            */}
-              <div
-                className={`${activeStep === 3 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 pb-0 overflow-y-auto`}
-              >
-                <PosesGallery
-                  productType={productType}
-                  selectedModels={selectedModels}
-                  selectedPoseKeys={selectedPoseKeys}
-                  setSelectedPoseKeys={setSelectedPoseKeys}
-                />
-              </div>
-              <div
-                className={`${activeStep === 4 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 pb-0 overflow-y-auto`}
-              >
-                <BackgroundGallery
-                  selectedBackgroundIds={selectedBackgroundIds}
-                  setSelectedBackgroundIds={setSelectedBackgroundIds}
-                />
-              </div>
-              <div
-                className={`${activeStep === 5 ? "relative" : "hidden"} z-60 w-full h-full p-4 sm:p-6 overflow-y-auto`}
-              >
-                <Summary
-                  productType={productType}
-                  productImages={{
-                    topFront: uploadedImageUrl,
-                    topBack: topBackUrl,
-                    bottomFront: bottomFrontUrl,
-                    bottomBack: bottomBackUrl,
-                    fullBodyFront: fullBodyFrontUrl,
-                    fullBodyBack: fullBodyBackUrl,
+              <AnimatePresence mode="wait" initial={false} custom={direction}>
+                <motion.div
+                  key={activeStep}
+                  custom={direction}
+                  variants={{
+                    hidden: (dir: number) => ({ opacity: 0, x: dir > 0 ? 20 : -20 }),
+                    visible: { opacity: 1, x: 0 },
+                    exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -20 : 20 }),
                   }}
-                  selectedModels={selectedModels}
-                  selectedPoseKeys={selectedPoseKeys}
-                  selectedBackgroundIds={selectedBackgroundIds}
-                  projectName={projectName}
-                  onProjectNameChange={setProjectName}
-                  onGoToModelsStep={() => setActiveStep(2)}
-                  onGoToPosesStep={() => setActiveStep(3)}
-                  onGoToBackgroundStep={() => setActiveStep(4)}
-                />
-              </div>
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className={`relative z-60 w-full h-full p-4 sm:p-6 overflow-y-auto ${[2, 3, 4].includes(activeStep) ? "pb-0 sm:pb-0" : ""}`}
+                >
+                  {activeStep === 1 && (
+                    <AnimatePresence mode="wait">
+                      {!showStepOneForm ? (
+                        <motion.div
+                          key="upload"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          className="w-full h-full"
+                        >
+                          <UploadSection
+                            productType={productType}
+                            setProductType={setProductTypeAndClearPoses}
+                            onImageUpload={handleUploadSectionImage}
+                          />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="form"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.4, ease: "easeInOut" }}
+                          className="w-full h-full"
+                        >
+                          <StepOneForm
+                            productType={productType}
+                            setProductType={setProductTypeAndClearPoses}
+                            uploadedImageUrl={uploadedImageUrl}
+                            setUploadedImageUrl={setUploadedImageUrl}
+                            topBackUrl={topBackUrl}
+                            setTopBackUrl={setTopBackUrl}
+                            bottomFrontUrl={bottomFrontUrl}
+                            setBottomFrontUrl={setBottomFrontUrl}
+                            bottomBackUrl={bottomBackUrl}
+                            setBottomBackUrl={setBottomBackUrl}
+                            fullBodyFrontUrl={fullBodyFrontUrl}
+                            setFullBodyFrontUrl={setFullBodyFrontUrl}
+                            fullBodyBackUrl={fullBodyBackUrl}
+                            setFullBodyBackUrl={setFullBodyBackUrl}
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  )}
+                  {activeStep === 2 && (
+                    <ModelsGallery
+                      selectedModelIds={selectedModelIds}
+                      setSelectedModelIds={setSelectedModelIds}
+                      customModels={customModels}
+                      setCustomModels={setCustomModels}
+                      productType={productType}
+                    />
+                  )}
+                  {activeStep === 3 && (
+                    <PosesGallery
+                      productType={productType}
+                      selectedModels={selectedModels}
+                      selectedPoseKeys={selectedPoseKeys}
+                      setSelectedPoseKeys={setSelectedPoseKeys}
+                    />
+                  )}
+                  {activeStep === 4 && (
+                    <BackgroundGallery
+                      selectedBackgroundIds={selectedBackgroundIds}
+                      setSelectedBackgroundIds={setSelectedBackgroundIds}
+                    />
+                  )}
+                  {activeStep === 5 && (
+                    <Summary
+                      productType={productType}
+                      productImages={{
+                        topFront: uploadedImageUrl,
+                        topBack: topBackUrl,
+                        bottomFront: bottomFrontUrl,
+                        bottomBack: bottomBackUrl,
+                        fullBodyFront: fullBodyFrontUrl,
+                        fullBodyBack: fullBodyBackUrl,
+                      }}
+                      selectedModels={selectedModels}
+                      selectedPoseKeys={selectedPoseKeys}
+                      selectedBackgroundIds={selectedBackgroundIds}
+                      projectName={projectName}
+                      onProjectNameChange={setProjectName}
+                      onGoToModelsStep={() => { setDirection(-1); setActiveStep(2); }}
+                      onGoToPosesStep={() => { setDirection(-1); setActiveStep(3); }}
+                      onGoToBackgroundStep={() => { setDirection(-1); setActiveStep(4); }}
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </div>
             <div
               className={`${showStepOneForm || activeStep >= 2 ? "hidden" : "hidden lg:flex"} lg:w-5/12 h-full relative items-start shrink-0`}
@@ -284,7 +308,10 @@ export default function HomePage() {
           >
             <button
               type="button"
-              onClick={() => setActiveStep((s) => Math.max(1, s - 1))}
+              onClick={() => {
+                setDirection(-1);
+                setActiveStep((s) => Math.max(1, s - 1));
+              }}
               disabled={activeStep === 1}
               className="px-2 py-2 sm:px-[14px] sm:py-3 border border-border-muted text-black-600 gap-1.5 sm:gap-2 rounded-md flex justify-center items-center leading-[120%] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors shrink-0"
             >
@@ -299,7 +326,10 @@ export default function HomePage() {
             </button>
             <button
               type="button"
-              onClick={() => setActiveStep((s) => Math.min(5, s + 1))}
+              onClick={() => {
+                setDirection(1);
+                setActiveStep((s) => Math.min(5, s + 1));
+              }}
               disabled={activeStep === 5 || !canGoToNextStep}
               className="px-2 py-2 sm:px-[14px] sm:py-3 bg-black-600 border border-black-600 gap-1.5 sm:gap-2 text-white rounded-md flex justify-center items-center leading-[120%] font-medium text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors shrink-0"
             >
